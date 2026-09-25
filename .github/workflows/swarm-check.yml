@@ -25,6 +25,7 @@ jobs:
           node-version: '24'
       - run: python3 swarm/scripts/check-upstream.py
       - run: python3 -m unittest discover -s swarm/tests -v
+      - run: python3 -m unittest discover -s swarm/migration/vpn -v
   application:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
