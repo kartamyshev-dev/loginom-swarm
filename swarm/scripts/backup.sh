@@ -127,7 +127,7 @@ secret_paths=(etc/passwd etc/group)
 for path in etc/loginom-swarm-vpn etc/ssh root/.ssh root/.config/loginom-swarm \
   root/.config/sing-box etc/netplan etc/systemd/resolved.conf.d \
   etc/docker/daemon.json etc/dnsmasq.d etc/nftables.conf \
-  usr/local/libexec/swarm-vpn etc/systemd/network/10-netplan-ens18.network.d \
+  usr/local/libexec/swarm-vpn usr/local/libexec/loginom-swarm etc/systemd/network/10-netplan-ens18.network.d \
   etc/systemd/system/docker.service.d; do
   if [ -e "/$path" ]; then secret_paths+=("$path"); fi
 done

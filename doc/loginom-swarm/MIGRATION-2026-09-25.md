@@ -149,3 +149,22 @@ AVX/AVX2, VPN/firewall/exit IP185.21.15.251, отсутствие самозап
 /var/lib/loginom-migration/deployment/restore-database.sh с exact machine ID,
 сверить fingerprint; только после этого квалифицировать и активировать сервисы.
 Полный перенос и cutover ещё не завершены. Исходный VPS остаётся замороженным.
+
+## После пользовательского CPU reboot
+
+Новый boot ID подтверждён; AVX/AVX2 доступны, VPN/firewall/Docker восстановились.
+DB restore PASS с совпадением fingerprint. HTTP80 на loginom-swarm.bg.local:
+health authenticated/private, owner login PASS, anonymous protected API403.
+Worker/memory включены в autostart, миграционные activation gates удалены после
+успешных проверок. Backup timer пока disabled до полной проверки новой копии.
+
+Ubuntu26.04 потребовала собственного pinned Bubblewrap и ABI5.0 AppArmor
+attachment; глобальные policy/sysctl не менялись. Namespace/seccomp Chromium и
+все role boundaries PASS, новых sandbox denials нет. Подробности security/README.md.
+Обе Astra medium сессии продолжены с прежними ID, hooks/capture/commit PASS.
+GitHub identity/push rights и memory find/read PASS. Узел не запускался.
+Активный корневой .env Loginom Swarm переключён на новый сервер; исходные
+реквизиты сохранены в private/migration-source.env и старом проекте paperclip.
+Первый полный backup выполняет loginom-migration-first-backup.service, лог
+/var/lib/loginom-migration/first-backup.log. Следом verify-backup.sh в отдельном
+каталоге/БД, затем timer, финальная проверка сервиса и отчёт.

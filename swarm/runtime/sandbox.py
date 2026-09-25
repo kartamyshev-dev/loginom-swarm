@@ -14,6 +14,8 @@ from environment import model_environment
 ROOT = Path('/opt/loginom-worker')
 TOOLS = Path('/opt/loginom-swarm/toolchains')
 ROLE_NAMES = {'developer', 'reviewer', 'acceptance'}
+BWRAP = '/usr/local/libexec/loginom-swarm/bwrap'
+BWRAP_SHA256 = '523da3e7399044be5163aee6f57a77a6bef7454376e28f0a0627920bae1b76b6'
 
 
 def immutable_file(path):
@@ -46,6 +48,13 @@ def registration(campaign, role, config='/etc/loginom-swarm/roles.json'):
     return row
 
 
+def qualified_bwrap():
+    binary = immutable_file(BWRAP)
+    if hashlib.sha256(binary.read_bytes()).hexdigest() != BWRAP_SHA256:
+        raise ValueError('Unqualified Bubblewrap binary')
+    return binary
+
+
 def command(record, payload, *, network=False):
     """Payload comes only from operator code, never from RPC or model arguments.
 
@@ -53,7 +62,8 @@ def command(record, payload, *, network=False):
     Docker socket, other profiles, or coordinator state are mounted.
     """
     profile, workspace = record['profile'], record['workspace']
-    args = ['/usr/bin/bwrap', '--die-with-parent', '--new-session', '--unshare-all']
+    binary = qualified_bwrap()
+    args = [str(binary), '--die-with-parent', '--new-session', '--unshare-all']
     if network:
         args.append('--share-net')
     args += ['--cap-drop', 'ALL', '--ro-bind', '/usr', '/usr']

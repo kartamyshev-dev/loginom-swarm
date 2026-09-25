@@ -16,7 +16,8 @@ class SandboxTests(unittest.TestCase):
 
     def test_reviewer_only_workspace_is_readonly_but_profile_persists(self):
         row=self.row('reviewer')
-        argv,env=sandbox.command(row,['/usr/bin/true'])
+        with patch.object(sandbox, 'qualified_bwrap', return_value=Path(sandbox.BWRAP)):
+            argv,env=sandbox.command(row,['/usr/bin/true'])
         def mounted(flag,path):return any(argv[i:i+3]==[flag,path,path] for i in range(len(argv)))
         self.assertTrue(mounted('--ro-bind',row['workspace']))
         self.assertTrue(mounted('--bind',row['profile']))
@@ -39,3 +40,14 @@ class SandboxTests(unittest.TestCase):
             p=Path(d).resolve()/'roles.json';p.write_text('[]')
             link=p.parent/'alias';link.symlink_to(p)
             with self.assertRaises(ValueError):sandbox.immutable_file(link)
+
+    def test_modified_launcher_is_rejected_before_command_construction(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as d:
+            binary=Path(d)/'bwrap';binary.write_bytes(b'approved-binary')
+            approved=hashlib.sha256(binary.read_bytes()).hexdigest()
+            with patch.object(sandbox, 'immutable_file', return_value=binary), patch.object(sandbox, 'BWRAP_SHA256', approved):
+                self.assertEqual(sandbox.qualified_bwrap(), binary)
+                binary.write_bytes(b'modified-binary')
+                with self.assertRaisesRegex(ValueError, 'Unqualified'):
+                    sandbox.command(self.row('developer'), ['/usr/bin/true'])

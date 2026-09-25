@@ -153,3 +153,19 @@ bytes/modes, memory registrations/cursors/sealed hashes PASS. Production дан�
 Не считать успешные OAuth, login и отправку CSV успешной приёмкой. Причина отказа,
 ресурсы, сохранённые recovery записи и порядок продолжения —
 [отчёт](CLI-INFRASTRUCTURE-2026-09-25.md).
+
+## LAN migration, 25.09.2026
+
+Холодный снимок:803875 entries PASS, содержимое/права/xattrs и remap проверены.
+БД восстановлена с совпадением полного fingerprint до старта приложения.
+После CPU reboot AVX/AVX2 PASS. VPN exit185.21.15.251 PASS.
+HTTP80, authenticated/private health, owner login, anonymous API403 PASS.
+Node24.19.0, Bun1.3.14/revision0d9b296af33f2b851fcbf4df3e9ec89751734ba4, CLI0.1.16.
+Worker boundary: все роли и6negative requests PASS. Chromium namespace/seccomp,
+non-root и enforced AppArmor PASS через Playwright/Xvfb, сеть выключена.
+Личные GitHub identity и push permission PASS (без нового push/PR).
+Обе Astra medium сессии ответили через VPN; hooks и capture/commit PASS.
+Канонический Peer и реальные thread ID сохранены; find/read/foreign-Peer denial PASS.
+Журнал неподтверждённой Loginom мутации byte-identical исходному снимку.
+70 локальных Swarm tests:PASS, один macOS-specific skip.
+Новая LAN backup и полный restore test ещё выполняются. Sol/CLI приёмка не повторялась.

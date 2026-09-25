@@ -169,3 +169,9 @@ Qualification/barrier файлы сохраняются локальным commi
 на назначении сохранён pre-reboot.json. После reboot сначала проверить AVX2
 и VPN, затем восстановить БД. Производственный запуск ещё не выполнен.
 Новая VPN-подписка заменяет старую VLESS-конфигурацию. Sampling не запускать.
+
+После CPU reboot: AVX2/VPN PASS, БД восстановлена с совпадением fingerprint,
+HTTP80 и owner auth работают. Worker/memory autostart включён; sandbox Chromium
+и role boundaries PASS. Astra hooks/capture/commit и personal GitHub права PASS.
+Первый LAN backup в процессе; следующий шаг — полная verify-backup, timer и
+финальная передача. Sampling и CLI recovery остаются заблокированы.

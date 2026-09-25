@@ -17,7 +17,8 @@ worker/publisher/memory `21001/21002/21003`; при других UID она ос
   `/etc/loginom-swarm`, память, профиль публикатора, связанные units/AppArmor;
 - `secrets.tar.gz`: сведения о системных аккаунтах, существующие
   `/etc/loginom-swarm-vpn`, `/etc/ssh`, `/root/.ssh` и служебные root-конфигурации; также VPN binary/helpers
-  `/usr/local/libexec/swarm-vpn`, сетевой drop-in
+  `/usr/local/libexec/swarm-vpn` и закреплённый sandbox launcher
+  `/usr/local/libexec/loginom-swarm`, сетевой drop-in
   `/etc/systemd/network/10-netplan-ens18.network.d` и Docker drop-ins
   `/etc/systemd/system/docker.service.d`;
 - `images.json`, `packages.tsv`: версии и образы; `active-*.txt`: прежнее состояние
@@ -117,3 +118,13 @@ Manifest-тесты дополнительно проверяют отсутст
 перед серверным PASS требуется Linux-проверка реальных ACL/xattrs. Архивный
 manifest защищает от случайных изменений и дрейфа live-профилей, но не заменяет
 доверенное хранение SHA256SUMS при угрозе подмены самого backup.
+
+## Совместимость LAN sandbox и откат на старый VPS
+
+LAN исполнители квалифицированы на Ubuntu26.04 с AppArmor ABI5.0 и отдельным
+закреплённым Bubblewrap. На старом Ubuntu24.04 оставлена исходная версия
+исполнителя. При обратном переносе нельзя слепо заменять её новым sandbox runtime:
+сначала заморозить назначение, перенести актуальные данные/профили/БД и сопоставить
+UID, затем использовать совместимую и повторно проверенную конфигурацию источника.
+После обновления OAuth-профилей на назначении старая копия не является гарантированно
+действующей. Простой запуск старого VPS без переноса новых записей не считается откатом.
