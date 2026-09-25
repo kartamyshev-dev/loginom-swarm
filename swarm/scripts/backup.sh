@@ -27,6 +27,7 @@ tar --exclude='*/node_modules' --exclude='*/.cache' --exclude='*/.bun/install/ca
   -cf "$backup_dir/worker.tar" -C / \
   opt/loginom-worker/profiles opt/loginom-worker/workspaces opt/loginom-worker/repo \
   opt/loginom-worker/state opt/loginom-swarm/runtime etc/loginom-swarm \
+  var/lib/loginom-swarm-publisher \
   etc/apparmor.d/loginom-swarm-worker etc/systemd/system/loginom-swarm-worker.service
 docker compose stop -t 60 paperclip
 docker compose exec -T db pg_dump -U paperclip -d paperclip -Fc > "$backup_dir/database.dump"

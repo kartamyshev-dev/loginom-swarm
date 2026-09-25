@@ -6,8 +6,8 @@
 
 - Cloud enrollment: active; instance inst_a03bb598-b988-41a9-aeb4-3fccd41202f0.
 - GitHub connection 26610ae5-466f-4c30-a9ce-7736678aa1d7: active personal OAuth,
-  kartamyshev-dev, доступен только kartamyshev-dev/loginom-swarm. Требуется установка
-  GitHub App владельцем gooddaytoday для loginom-ai-agent.
+  kartamyshev-dev, доступен только kartamyshev-dev/loginom-swarm. Сохранено как
+  legacy-подключение; публикация узлов переводится на личный GitHub CLI OAuth.
 - Доступ подключения ограничен publisher e7e6aed2-95b5-41ed-bccc-21f1bd2b7015;
   publisher paused, command /usr/bin/false, heartbeat/wakeOnDemand выключены.
 - Codex developer и reviewer: сервер подтвердил Logged in using ChatGPT.
@@ -76,5 +76,13 @@ Developer c49d36f3-1b4d-4f09-8184-acc73daef2c5 сохранён; SSH-пилот 
 отрицательными тестами. Не выдавать её за работающий gateway. Далее нужны Linux
 hooks/enrollment, настоящий capture/extraction/read-back, coordinator native cases,
 независимый Loginom save/reopen, qualification отказов и production rollout.
-Отдельный внешний блок — GitHub App на gooddaytoday/loginom-ai-agent; установку
-может выполнить владелец. Доступ к kartamyshev-dev/loginom-swarm уже подтверждён.
+GitHub App владельца больше не требуется: пользователь выбрал личную публикацию.
+На Mac API подтвердил kartamyshev-dev (97161574) и permissions.push=true для
+gooddaytoday/loginom-ai-agent. На VPS создан отдельный loginom-publisher и
+подтверждён личный OAuth. Сервер создал ветку swarm-publication-probe и draft PR
+https://github.com/gooddaytoday/loginom-ai-agent/pull/2, закрытый без слияния.
+Автор PR, author и committer тестового commit 6aa209c8caa7fa7512a6350a03def6042c3921cc
+проверены через GitHub API: kartamyshev-dev. Worker не может прочитать токен;
+hosts.yml имеет 0600. Ветка оставлена как доказательство проверки.
+В Paperclip обновлены metadata/capabilities publisher, status=paused, command=false.
+Токены с Mac не копировались. Publisher и Sampling остаются остановлены.

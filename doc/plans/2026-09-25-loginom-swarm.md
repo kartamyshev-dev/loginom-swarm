@@ -12,7 +12,7 @@
    Codex, Node/Bun/Chromium, Loginom CLI, Python, GitHub CLI, bwrap, Xvfb.
    Отдельные постоянные checkout/.git.
 5. Изоляция ролей и allowlist окружения; immutable wrappers; review read-only;
-   только publisher получает native GitHub launchers; отдельные server OAuth.
+   только служебный publisher получает личный GitHub CLI OAuth; отдельные server OAuth.
 6. Linux OpenViking generation с exact registration → канонический Mac Peer;
    реальные thread ID/hooks/cursors; gateway без мастер-ключа в model env;
    capture/extraction/read-back, deny чужому Peer; локальную генерацию не менять.
@@ -36,3 +36,11 @@ VPS. Docker nested bwrap остановился на mount /proc EPERM; выкл
 остаются в Paperclip. Node/Bun/Chromium, Codex, CLI и memory runtime устанавливаются
 в immutable host runtime. Контейнер форка получает только клиент/координатор;
 нет Docker socket, root SSH или model credentials в control-plane контейнере.
+
+## Личная публикация (25.09.2026)
+
+По прямому указанию пользователя ветки, push и PR должны выполняться как
+`kartamyshev-dev`. Использовать отдельный личный GitHub CLI OAuth на сервере,
+без требования GitHub App владельца gooddaytoday. Не копировать токен с Mac.
+Моделям не выдавать профиль публикатора; идентичность инициатора сохранять
+в Paperclip. Перед каждой публикацией проверять identity, права и PASS кандидата.

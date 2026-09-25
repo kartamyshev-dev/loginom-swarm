@@ -34,6 +34,8 @@ def main():
                 subprocess.run(['runuser','-u','loginom-worker','--','git','clone','--no-hardlinks','--no-checkout',str(BASE/'repo'),str(workspace)],check=True)
                 subprocess.run(['runuser','-u','loginom-worker','--','git','-C',str(workspace),'checkout','--detach',SHA],check=True)
         if role!='acceptance':
+            for key,value in [('user.name','kartamyshev-dev'),('user.email','97161574+kartamyshev-dev@users.noreply.github.com')]:
+                subprocess.run(['runuser','-u','loginom-worker','--','git','-C',str(workspace),'config','--local',key,value],check=True)
             subprocess.run(['runuser','-u','loginom-worker','--','git','-C',str(workspace),'remote','set-url','origin','https://github.com/gooddaytoday/loginom-ai-agent.git'],check=True)
             gitdir=subprocess.check_output(['runuser','-u','loginom-worker','--','git','-C',str(workspace),'rev-parse','--path-format=absolute','--git-common-dir'],text=True).strip()
             assert gitdir==str(workspace/'.git') and (workspace/'.git').is_dir()

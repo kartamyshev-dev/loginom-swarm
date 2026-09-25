@@ -89,3 +89,14 @@ GitHub CI на 8b308fa40: contracts PASS, typecheck PASS, image source build PAS
 Container→host Unix socket PASS в отдельном UID1000/cap_drop ALL/network-none
 контейнере. Worker сообщает processingEnabled=false. 20 локальных Python
 проверок PASS, включая успешный update merge и конфликт без изменения рабочей ветки.
+
+## Личная публикация GitHub — 25.09.2026
+
+Отдельный server OAuth GitHub CLI: identity kartamyshev-dev/97161574,
+permissions.push=true для gooddaytoday/loginom-ai-agent. Реальный Git push
+создал swarm-publication-probe, PR #2 в loginom создан как draft и закрыт без
+слияния. API подтвердил author/committer kartamyshev-dev у commit
+6aa209c8caa7fa7512a6350a03def6042c3921cc и того же автора PR.
+Токен 0600 в отдельном UID999, worker UID1000 не может его читать.
+Проверены shell syntax, Python compilation, 20 контрактных тестов и registry.
+Автоматический координатор ещё не интегрирован; Sampling не запускался.

@@ -35,6 +35,19 @@ try:
        'не удаляйте locks по возрасту, не повторяйте мутацию автоматически.\n'}}})
   if agent.get('status')!='paused':c.request('POST',f'/api/agents/{agent["id"]}/pause',{})
   ids[role]=agent['id']
+ # Publication authority is personal GitHub OAuth, never the legacy App grant.
+ publisher_path='/api/agents/'+cfg['publisherAgentId']
+ publisher=c.request('GET',publisher_path)
+ metadata=publisher.get('metadata') or {}
+ metadata.update({'swarmRole':'publisher','githubAuth':cfg['publication']['auth'],
+                  'githubLogin':cfg['publication']['githubLogin'],'setupStatus':'incomplete',
+                  'execution':'unprivileged-host-service'})
+ c.request('PATCH',publisher_path,{'metadata':metadata,'capabilities':
+   'Публикация только после проверенного PASS: отдельная ветка, push и PR в '
+   'gooddaytoday/loginom-ai-agent:loginom от личного аккаунта kartamyshev-dev через '
+   'служебный GitHub CLI OAuth. Без force push, merge, release и следующего узла. '
+   'Запуск закрыт до готовности координатора.'})
+ if publisher.get('status')!='paused':c.request('POST',publisher_path+'/pause',{})
  # The existing developer identity and old SSH pilot are retained until complete replacement.
  cfg['agentIds']={'developer':'c49d36f3-1b4d-4f09-8184-acc73daef2c5',**ids,'publisher':cfg['publisherAgentId']}
  config.write_text(json.dumps(cfg,indent=2,ensure_ascii=False)+'\n')

@@ -44,6 +44,13 @@ for row in rows:
 for p in (root/'opt/loginom-worker/profiles').rglob('auth.json'):
  assert p.stat().st_mode & 0o077 == 0
 assert (root/'etc/systemd/system/loginom-swarm-worker.service').is_file()
+publisher=root/'var/lib/loginom-swarm-publisher'
+if publisher.exists():
+ credential=publisher/'.config/gh/hosts.yml'
+ assert credential.is_file() and credential.stat().st_mode & 0o077 == 0
+ assert publisher.stat().st_mode & 0o077 == 0
+ assert credential.read_bytes() == pathlib.Path('/var/lib/loginom-swarm-publisher/.config/gh/hosts.yml').read_bytes()
+ print('Publisher OAuth profile restored separately; bytes and private modes match.')
 print('Worker archive extracted separately; registrations, directories and auth permissions verified.')
 PYWORKER
 fi
