@@ -151,7 +151,7 @@ test("invalid DB package metadata prevents publication of either package", async
 });
 
 test("preview workflow separates branch compilation from trusted publishing", () => {
-  const workflow = readFileSync(new URL("../.github/workflows/release.yml", import.meta.url), "utf8");
+  const workflow = readFileSync(new URL("../swarm/upstream-workflows/release.yml.disabled", import.meta.url), "utf8");
   const builder = workflow.split("  package_preview:")[1].split("  publish_preview:")[0];
   const publisher = workflow.split("  publish_preview:")[1].split("  image_preview:")[0];
   const image = workflow.split("  image_preview:")[1].split("  publish_image_preview:")[0];
@@ -171,7 +171,7 @@ test("preview workflow separates branch compilation from trusted publishing", ()
 });
 
 test("manual migrator and branch preview retain their npm publisher and concurrency", () => {
-  const release = readFileSync(new URL("../.github/workflows/release.yml", import.meta.url), "utf8");
+  const release = readFileSync(new URL("../swarm/upstream-workflows/release.yml.disabled", import.meta.url), "utf8");
   assert.match(release, /\(inputs.channel == 'preview' \|\| inputs.channel == 'cloud-migrator'\) && format\('\{0\}-\{1\}', inputs.channel, inputs.source_ref\)/);
   const publisher = release.split("  publish_preview:")[1].split("  image_preview:")[0];
   assert.match(publisher, /group: preview-package-publish-\$\{\{ inputs.source_ref \}\}/);
@@ -224,9 +224,9 @@ test("commits sharing a short prefix use separate full-SHA image addresses", asy
 });
 
 test("cloud builds start per commit and preserve tag promotion dependencies", () => {
-  const docker = readFileSync(new URL("../.github/workflows/docker.yml", import.meta.url), "utf8");
-  const cloud = readFileSync(new URL("../.github/workflows/docker-cloud.yml", import.meta.url), "utf8");
-  const readiness = readFileSync(new URL("../.github/workflows/cloud-readiness.yml", import.meta.url), "utf8");
+  const docker = readFileSync(new URL("../swarm/upstream-workflows/docker.yml.disabled", import.meta.url), "utf8");
+  const cloud = readFileSync(new URL("../swarm/upstream-workflows/docker-cloud.yml.disabled", import.meta.url), "utf8");
+  const readiness = readFileSync(new URL("../swarm/upstream-workflows/cloud-readiness.yml.disabled", import.meta.url), "utf8");
   assert.match(readiness, /branches: \[master\]/);
   assert.match(readiness, /uses: \.\/\.github\/workflows\/docker-cloud.yml/);
   assert.doesNotMatch(cloud, /^  push:/m);
@@ -245,7 +245,7 @@ test("cloud builds start per commit and preserve tag promotion dependencies", ()
 });
 
 test("cloud builds bake the managed runtime identity and verify it before publication", () => {
-  const workflow = readFileSync(new URL("../.github/workflows/docker-cloud.yml", import.meta.url), "utf8");
+  const workflow = readFileSync(new URL("../swarm/upstream-workflows/docker-cloud.yml.disabled", import.meta.url), "utf8");
   const build = workflow.split("      - name: Build and push (cloud)")[1].split("      - name:")[0];
   assert.match(build, /build-args: \|\n\s+USER_UID=1001\n\s+USER_GID=1001\n/);
   const verify = workflow.indexOf("      - name: Verify cloud runtime user");
@@ -263,7 +263,7 @@ test("cloud builds bake the managed runtime identity and verify it before public
 });
 
 test("cloud cache imports are bounded, follow master ancestry, and retain the legacy fallback", () => {
-  const workflow = readFileSync(new URL("../.github/workflows/docker-cloud.yml", import.meta.url), "utf8");
+  const workflow = readFileSync(new URL("../swarm/upstream-workflows/docker-cloud.yml.disabled", import.meta.url), "utf8");
   const selector = workflow.indexOf("      - name: Select cloud cache ancestry");
   assert.ok(selector > workflow.indexOf("      - name: Login to GitHub Container Registry"));
   assert.ok(selector > workflow.indexOf("      - name: Set up Docker Buildx"));
@@ -310,7 +310,7 @@ if (process.argv.at(-1) !== process.env.AVAILABLE_CACHE) {
 });
 
 test("normal cloud builds publish the checked digest only when source and platform match", () => {
-  const workflow = readFileSync(new URL("../.github/workflows/docker-cloud.yml", import.meta.url), "utf8");
+  const workflow = readFileSync(new URL("../swarm/upstream-workflows/docker-cloud.yml.disabled", import.meta.url), "utf8");
   const cloud = workflow.split("  build-and-push-cloud:")[1];
   const verify = cloud.indexOf("      - name: Verify the pushed image resolves the declared Sentry version");
   const publish = cloud.indexOf("      - name: Publish verified full-SHA cloud tag");

@@ -13,9 +13,9 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 const script = path.join(repoRoot, "scripts", "e2e-shard.mjs");
 const durationsManifest = path.join(repoRoot, "scripts", "e2e-shard-durations.json");
 const playwrightConfig = path.join(repoRoot, "tests", "e2e", "playwright.config.ts");
-const prCallerWorkflow = path.join(repoRoot, ".github", "workflows", "pr.yml");
+const prCallerWorkflow = path.join(repoRoot, "swarm", "upstream-workflows", "pr.yml.disabled");
 const trustedPrWorkflowPath = ".github/workflows/pr-trusted.yml";
-const trustedPrWorkflow = path.join(repoRoot, trustedPrWorkflowPath);
+const trustedPrWorkflow = path.join(repoRoot, "swarm", "upstream-workflows", "pr-trusted.yml.disabled");
 
 const SHARD_COUNT = 3;
 

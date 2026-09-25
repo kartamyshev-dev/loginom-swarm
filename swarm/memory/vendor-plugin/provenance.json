@@ -1,0 +1,37 @@
+{
+  "upstream": "volcengine/OpenViking memory plugin",
+  "version": "0.8.1",
+  "generation": "20260925.1",
+  "originalSha256": {
+    "scripts/session-state.mjs": "ffe67459dd4263d715b7a984cff145fa01908b1ce02bb0e24d06bd15087539fc",
+    "scripts/shared/session-model.mjs": "0454820da02e4e3bfe01732813dee46416dddbc08a52f085a3bc065be1a9ec6e",
+    "scripts/ov-session.mjs": "990e05d9042c167fa5875a309e304fc3b1ba6b163b2a71c69fee34eb583a8923",
+    "scripts/shared/batch-send.mjs": "3e20e21f1418ab060c1ba1dcd1a74875e16b076d776e7adb67efd0203c295aea",
+    "scripts/shared/retryable.mjs": "7f12638ed0adfd0ff80e748e4e9a31b8417c24666326f0eec2b5d8ec57c2268c",
+    "scripts/shared/pending-queue.mjs": "1fbf136a2dbb405788d7ea649af06e77975727438497e11c06c3217a31e80163",
+    "scripts/capture-utils.mjs": "7ed7f8c6a46de746e55ccd5c06109acd65c3fa06684a0174968fd55f716803a1",
+    "scripts/shared/capture-utils.mjs": "d8ee5bbcfa8e7b652f4c48b9e089a56ef8f451ced94c3a18c6e287fdfb57392f",
+    "scripts/config.mjs": "5cab059b760abb2e806ec198808334b2e28447200a777fddd4b9c983f042ed37",
+    "scripts/shared/plugin-config.mjs": "42e6bc46e4d974b06c82fcb65843919bf6bca8e79429aec7db77089dcef45566",
+    "scripts/shared/credentials.mjs": "8cacbf4885933033838639b857c44c39a7d9000e6bd34505a065c7c5e285aa63",
+    "scripts/ov-credentials.mjs": "83b476a75b304aafa858726d647a3bd953dd9e46327091a37ccde0590975131c"
+  },
+  "patches": {
+    "scripts/session-state.mjs": "Reject aged locks and corrupt/unreadable existing state; persist cursor with fsync before acknowledgment; never reset implicitly.",
+    "scripts/ov-session.mjs": "Reject transcript shrink; never move a capture cursor backwards."
+  },
+  "deployedSha256": {
+    "scripts/session-state.mjs": "31ea72762b7edd488e15e5a844dfc833f406daeacb032c222429effc3294eba2",
+    "scripts/capture-utils.mjs": "7ed7f8c6a46de746e55ccd5c06109acd65c3fa06684a0174968fd55f716803a1",
+    "scripts/ov-session.mjs": "e8d0a6a064ca91a39b2a007304b788b6093f5a67592de4c3dce8b3d3449eb652",
+    "scripts/config.mjs": "5cab059b760abb2e806ec198808334b2e28447200a777fddd4b9c983f042ed37",
+    "scripts/ov-credentials.mjs": "83b476a75b304aafa858726d647a3bd953dd9e46327091a37ccde0590975131c",
+    "scripts/shared/retryable.mjs": "7f12638ed0adfd0ff80e748e4e9a31b8417c24666326f0eec2b5d8ec57c2268c",
+    "scripts/shared/batch-send.mjs": "3e20e21f1418ab060c1ba1dcd1a74875e16b076d776e7adb67efd0203c295aea",
+    "scripts/shared/pending-queue.mjs": "1fbf136a2dbb405788d7ea649af06e77975727438497e11c06c3217a31e80163",
+    "scripts/shared/capture-utils.mjs": "d8ee5bbcfa8e7b652f4c48b9e089a56ef8f451ced94c3a18c6e287fdfb57392f",
+    "scripts/shared/credentials.mjs": "8cacbf4885933033838639b857c44c39a7d9000e6bd34505a065c7c5e285aa63",
+    "scripts/shared/session-model.mjs": "0454820da02e4e3bfe01732813dee46416dddbc08a52f085a3bc065be1a9ec6e",
+    "scripts/shared/plugin-config.mjs": "42e6bc46e4d974b06c82fcb65843919bf6bca8e79429aec7db77089dcef45566"
+  }
+}

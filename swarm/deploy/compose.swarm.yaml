@@ -1,0 +1,6 @@
+# Explicit override; never selected by the baseline Compose invocation.
+services:
+  paperclip:
+    image: ${SWARM_IMAGE:?Set the verified ghcr.io/kartamyshev-dev/loginom-swarm digest}
+    volumes:
+      - /run/loginom-swarm:/run/loginom-swarm:ro

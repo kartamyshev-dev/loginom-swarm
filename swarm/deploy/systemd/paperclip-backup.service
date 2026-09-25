@@ -1,0 +1,10 @@
+[Unit]
+Description=Paperclip database and files backup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/opt/paperclip/scripts/backup.sh
+TimeoutStartSec=9h

@@ -1,0 +1,42 @@
+[Unit]
+Description=Loginom Swarm private host executor (setup mode)
+After=network-online.target apparmor.service
+Wants=network-online.target
+Requires=apparmor.service
+
+[Service]
+Type=simple
+User=loginom-worker
+Group=loginom-worker
+WorkingDirectory=/opt/loginom-worker
+ExecStart=/usr/bin/python3 -I /opt/loginom-swarm/runtime/worker.py
+AppArmorProfile=loginom-swarm-worker
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+UMask=0077
+RuntimeDirectory=loginom-swarm
+RuntimeDirectoryMode=0700
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelModules=true
+ProtectClock=true
+# ProtectKernelLogs/ProtectProc/ProcSubset/ProtectKernelTunables mask host /proc
+# and prevent mounting a fresh proc in an unprivileged nested PID namespace.
+# Bubblewrap creates a fresh PID/proc namespace for each role instead.
+PrivateTmp=true
+RestrictRealtime=true
+LockPersonality=true
+LimitCORE=0
+TasksMax=512
+MemoryHigh=2G
+MemoryMax=3G
+KillMode=control-group
+TimeoutStopSec=45
+Restart=on-failure
+RestartSec=5
+StandardOutput=null
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target
