@@ -27,11 +27,11 @@ class GatewayTests(unittest.TestCase):
 
     def test_capture_forces_exact_peer_and_session(self):
         url='/api/v1/sessions/cx-'+self.principal()['threadId']+'/messages/batch'
-        _,body=authorize('POST',url,{'messages':[{'role':'assistant','content':'verified result'}]},self.principal())
+        _,body=authorize('POST',url,{'swarm_capture_offset':0,'messages':[{'role':'assistant','content':'verified result'}]},self.principal())
         self.assertEqual(body['messages'][0]['peer_id'],PEER)
         for bad in [{'peer_id':'foreign'},{'parts':[{'type':'reasoning','text':'hidden'}]}]:
-            with self.assertRaises(Denied):authorize('POST',url,{'messages':[{'role':'assistant',**bad}]},self.principal())
-        with self.assertRaises(Denied):authorize('POST',url.replace('cx-','other-'),{'messages':[]},self.principal())
+            with self.assertRaises(Denied):authorize('POST',url,{'swarm_capture_offset':0,'messages':[{'role':'assistant',**bad}]},self.principal())
+        with self.assertRaises(Denied):authorize('POST',url.replace('cx-','other-'),{'swarm_capture_offset':0,'messages':[]},self.principal())
 
     def test_direct_writes_and_commit_scope_overrides_are_denied(self):
         for url in ['/api/v1/content/write','/api/v1/fs/mkdir','/api/v1/resources','/api/v1/memories/remember']:

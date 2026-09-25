@@ -2,6 +2,7 @@
 import http.client
 import json
 import socket
+import re
 
 
 class WorkerConnection(http.client.HTTPConnection):
@@ -14,7 +15,7 @@ class WorkerConnection(http.client.HTTPConnection):
 
 
 def call(method,path,payload=None):
-    if (method,path) not in {('GET','/health'),('POST','/v1/probe')}:
+    if (method,path) not in {('GET','/health'),('POST','/v1/probe'),('POST','/v1/jobs'),('POST','/v1/jobs/cancel')} and not (method=='GET' and re.fullmatch(r'/v1/jobs/[a-f0-9]{64}',path)):
         raise ValueError('Node execution is not qualified')
     c=WorkerConnection()
     try:

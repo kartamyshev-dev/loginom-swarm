@@ -106,3 +106,35 @@ Backup 20260925T011019Z завершён успешно. Из его worker arch
 credential bytes совпали с сервером, права каталогов/файла закрыты (PASS).
 Это целевая проверка добавленного профиля; полный DB restore этого снимка
 повторно не выполнялся. После backup Paperclip/DB healthy, host worker active.
+
+
+## Протокол исполнителя и память — 25.09.2026, продолжение
+
+38 локальных Python tests PASS: журнал операций, отмена и прерывание, scope памяти,
+MCP stdio, идемпотентность по позиции capture, повторяющийся текст в новых ходах,
+повреждённое состояние, aged locks, empty transcript shrink и vendor hashes.
+Registry и git diff whitespace checks PASS.
+
+Native diagnostic case прошёл три sandbox роли до done. Повтор после restart
+не создаёт новую операцию. Отмена fixed probe: cancelled/cleanupConfirmed=true.
+Это инфраструктурный coordinator, не реализация полного цикла узла.
+
+Две Astra medium сессии получили доверенные native hooks и продолжили свои thread
+ID. Обе прошли recall/capture/commit, включая новый journal-v2 после restart.
+Обе через Codex app-server обнаружили только memory find/read, успешно выполнили
+поиск и чтение известной записи; чужой Peer отвергнут, hooks остаются trusted.
+На Mac OpenViking find/read подтвердили extraction серверного сообщения в общий
+канонический Peer. Sampling не запускался.
+
+Backup 20260925T070958Z: checksum PASS; изолированное восстановление БД PASS,
+210 таблиц и fingerprint строк совпали. Worker archive извлечён отдельно;
+publisher OAuth bytes/modes совпали, память восстановлена со связанными thread ID,
+cursor и hashes sealed config. Снимок сделан до перехода gateway journal на schema2.
+Последующая backup должна сохранить и новую схему журнала.
+
+CI 18488e955 завершён по общему тайм-ауту 90 минут, а не с подтверждённым итоговым
+PASS. Typecheck и image прошли; general server/UI/workspace части тестов проходили,
+но весь последовательный запуск не завершился. Новый downstream workflow делит
+тот же набор штатными upstream группами: 316+333=649 general server suites,
+72+75=147 serialized suites, плюс обе полные группы workspaces. Проверены отсутствие
+пересечений и полнота выбора. Новый удалённый прогон ещё не подтверждён.

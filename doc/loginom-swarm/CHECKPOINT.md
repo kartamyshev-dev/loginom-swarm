@@ -91,3 +91,40 @@ hosts.yml имеет 0600. Ветка оставлена как доказате
 20260925T011019Z завершён, целевое восстановление нового OAuth-профиля прошло:
 данные и закрытые права совпали. Полная повторная проверка БД этого снимка
 не выполнялась; предыдущие restore proofs остаются в VALIDATION.md.
+
+## Аудит готовности 25.09.2026, 01:22 UTC
+
+Актуальная сводка: [READINESS-AUDIT-2026-09-25.md](READINESS-AUDIT-2026-09-25.md).
+Повторно подтверждены health VPS, личный GitHub push permission и paused роли.
+Новые конкретные пробелы: pipeline transitions/documentKeys пусты; worker принимает
+только probe; candidate build и acceptance mount пока инфраструктурные; отдельный
+Loginom development профиль отсутствует. Полный координатор и memory gateway не
+реализованы. CI текущего 18488e955: contracts PASS, application/image выполняются.
+Аудит не запускал узел и не менял рабочую конфигурацию. Документы аудита сохраняются
+локально без push, чтобы не отменять текущий полный CI проверяемого commit.
+
+
+## Остановка по запросу пользователя — 2026-09-25T06:20:25+00:00
+
+Работа остановлена в безопасном месте. Активных execution jobs нет; heavy lock
+свободен, Sampling остаётся setup/manualStart=false. Worker и memory gateway
+работают как инфраструктурные службы. Подробная актуальная точка продолжения:
+[STOP-2026-09-25.md](STOP-2026-09-25.md). Этот checkpoint заменяет устаревшие
+утверждения аудита об отсутствии gateway и transitions. Текущие изменения
+сохранены локально, без commit/push; MCP инструменты памяти ещё не установлены.
+
+
+## Продолжение после остановки — 25.09.2026
+
+Пользователь возобновил работу. Остановка в STOP-2026-09-25.md — исторический
+снимок, не текущий запрет продолжения. Sampling по-прежнему запускать нельзя.
+MCP find/read теперь установлены, подключены и проверены через реальный Codex у
+обеих ролей, включая отказ чужому Peer и trusted hooks. Journal schema2 мигрирован
+из подтверждённого commit/cursor, обе роли прошли capture/commit после migration.
+Расширенная backup 20260925T070958Z восстановлена отдельно: DB210+fingerprint,
+publisher bytes/modes, memory thread/cursor/sealed hashes PASS. См. MEMORY.md.
+Локально 38 Python tests PASS; CI разделён на штатные группы после выявленного
+90-минутного тайм-аута. Source fork production deployment и полный node coordinator
+по-прежнему не готовы. Следом: финальная синхронизация runtime, restart/boundary
+checks, новый snapshot schema2, commit/PR и полный CI; далее независимая Loginom
+приёмка и настоящий stage runner/publisher. Узел запускает только пользователь.

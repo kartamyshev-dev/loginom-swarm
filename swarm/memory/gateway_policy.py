@@ -55,6 +55,9 @@ def authorize(method,target,body,principal):
             if key in query and (not query[key].isdigit() or int(query[key])>100):
                 raise Denied('Read limit exceeded')
         return path+'?'+urlencode(query),None
+    base='/api/v1/sessions/cx-'+thread
+    if method=='GET' and path==base and not query and body is None:
+        return path,None
     if method!='POST' or query or not isinstance(data,dict):raise Denied('Unsupported operation')
     if path in {'/api/v1/search/find','/api/v1/search/search'}:
         allowed={'query','target_uri','limit','score_threshold','read_content','level','peer_scope',
@@ -71,7 +74,9 @@ def authorize(method,target,body,principal):
         return path,data
     base='/api/v1/sessions/cx-'+thread
     if path==base+'/messages/batch':
-        if set(data)-{'messages','telemetry'} or not isinstance(data.get('messages'),list) or not 1<=len(data['messages'])<=100:
+        if type(data.get('swarm_capture_offset')) is not int or data['swarm_capture_offset']<0:
+            raise Denied('Capture offset required')
+        if set(data)-{'messages','telemetry','swarm_capture_offset'} or not isinstance(data.get('messages'),list) or not 1<=len(data['messages'])<=100:
             raise Denied('Invalid capture batch')
         for message in data['messages']:
             if not isinstance(message,dict) or set(message)-{'role','content','parts','peer_id','created_at','turn_id','message_kind','source_message_ids'}:
@@ -84,7 +89,9 @@ def authorize(method,target,body,principal):
         data['telemetry']=False
         return path,data
     if path==base+'/commit':
-        allowed={'keep_recent_count','retention_mode','keep_recent_turn_count','retained_message_token_budget','min_raw_tail_steps','telemetry'}
+        if type(data.get('swarm_capture_offset')) is not int or data['swarm_capture_offset']<0:
+            raise Denied('Commit offset required')
+        allowed={'keep_recent_count','retention_mode','keep_recent_turn_count','retained_message_token_budget','min_raw_tail_steps','telemetry','swarm_capture_offset'}
         if set(data)-allowed:raise Denied('Unsupported commit override')
         data['telemetry']=False
         return path,data

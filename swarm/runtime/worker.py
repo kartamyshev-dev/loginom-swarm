@@ -18,6 +18,8 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sandbox import registration, command, PROBE
+from jobs import Jobs, Conflict
+from protocol import resolve
 
 SOCKET = '/run/loginom-swarm/control.sock'
 LOCK = '/opt/loginom-worker/state/heavy.lock'
@@ -36,12 +38,38 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_GET(self):
+        if self.path.startswith('/v1/jobs/'):
+            try:
+                return self.reply(200, self.server.jobs.get(self.path.removeprefix('/v1/jobs/')))
+            except (FileNotFoundError, ValueError):
+                return self.reply(404, {'error': 'unknown_operation'})
         if self.path != '/health':
             return self.reply(404, {'error': 'not_found'})
         self.reply(200, {'service': 'loginom-swarm-worker', 'schema': 1,
-                         'processingEnabled': False, 'status': 'setup'})
+                         'processingEnabled': False, 'status': 'setup', 'executionProtocol': 1})
 
     def do_POST(self):
+        if self.path in {'/v1/jobs', '/v1/jobs/cancel'}:
+            try:
+                size = int(self.headers.get('Content-Length', '0'))
+                if self.headers.get('Transfer-Encoding') or not 0 < size <= 4096:
+                    raise ValueError('Invalid body size')
+                body = json.loads(self.rfile.read(size))
+                if self.path == '/v1/jobs':
+                    # Resolve every request, including a retry, before inspecting receipts.
+                    resolve(body)
+                    record = self.server.jobs.submit(body)
+                else:
+                    if not isinstance(body, dict) or set(body) != {'requestKey', 'expectedVersion'}:
+                        raise ValueError('Invalid cancellation fields')
+                    record = self.server.jobs.cancel(body['requestKey'], body['expectedVersion'])
+                return self.reply(200, record)
+            except Conflict:
+                return self.reply(409, {'error': 'execution_conflict'})
+            except FileNotFoundError:
+                return self.reply(404, {'error': 'unknown_operation'})
+            except (ValueError, TypeError, KeyError, AttributeError):
+                return self.reply(422, {'error': 'invalid_execution_request'})
         if self.path != '/v1/probe':
             return self.reply(409, {'error': 'processing_not_qualified'})
         try:
@@ -80,6 +108,7 @@ def main():
     # RuntimeDirectory is created and cleaned by systemd. Refuse stale sockets.
     with Server(SOCKET, Handler) as server:
         os.chmod(SOCKET, 0o600)
+        server.jobs = Jobs('/opt/loginom-worker/state/executions', LOCK, resolve)
         server.serve_forever()
 
 

@@ -7,7 +7,7 @@ source_dir=$(cd -- "$(dirname -- "$0")/.." && pwd)
 test -d /opt/loginom-swarm/toolchains/20260925.1
 test ! -e /etc/systemd/system/loginom-swarm-worker.service || { echo 'Existing installation: use a reviewed update, not bootstrap.' >&2; exit 1; }
 install -d -m 755 /opt/loginom-swarm/runtime /etc/loginom-swarm
-install -m 644 "$source_dir"/runtime/{environment,sandbox,worker,redaction}.py /opt/loginom-swarm/runtime/
+install -m 644 "$source_dir"/runtime/*.py /opt/loginom-swarm/runtime/
 install -m 644 "$source_dir/deploy/security/loginom-swarm-worker.apparmor" /etc/apparmor.d/loginom-swarm-worker
 apparmor_parser -r /etc/apparmor.d/loginom-swarm-worker
 # Dedicated infrastructure fixtures contain no source node implementation or auth.

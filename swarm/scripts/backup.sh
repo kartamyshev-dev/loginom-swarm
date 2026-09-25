@@ -12,12 +12,21 @@ backup_dir="backups/.partial-$stamp"
 mkdir "$backup_dir"
 worker_active=false
 systemctl is-active --quiet loginom-swarm-worker && worker_active=true
+memory_active=false
+systemctl is-active --quiet loginom-swarm-memory && memory_active=true
 restart_services() {
   docker compose start paperclip >/dev/null
+  if "$memory_active"; then systemctl start loginom-swarm-memory; fi
   if "$worker_active"; then systemctl start loginom-swarm-worker; fi
 }
 trap restart_services EXIT
 if "$worker_active"; then systemctl stop loginom-swarm-worker; fi
+if "$memory_active"; then systemctl stop loginom-swarm-memory; fi
+memory_paths=()
+if [ -d /opt/loginom-swarm/memory ]; then
+  memory_paths=(opt/loginom-swarm/memory var/lib/loginom-swarm-memory
+    etc/systemd/system/loginom-swarm-memory.service)
+fi
 # Snapshot large worker files first while the board remains online. The shared
 # lock excludes executor mutations. Compression runs after both services return.
 tar --exclude='*/node_modules' --exclude='*/.cache' --exclude='*/.bun/install/cache' \
@@ -27,7 +36,7 @@ tar --exclude='*/node_modules' --exclude='*/.cache' --exclude='*/.bun/install/ca
   -cf "$backup_dir/worker.tar" -C / \
   opt/loginom-worker/profiles opt/loginom-worker/workspaces opt/loginom-worker/repo \
   opt/loginom-worker/state opt/loginom-swarm/runtime etc/loginom-swarm \
-  var/lib/loginom-swarm-publisher \
+  var/lib/loginom-swarm-publisher "${memory_paths[@]}" \
   etc/apparmor.d/loginom-swarm-worker etc/systemd/system/loginom-swarm-worker.service
 docker compose stop -t 60 paperclip
 docker compose exec -T db pg_dump -U paperclip -d paperclip -Fc > "$backup_dir/database.dump"

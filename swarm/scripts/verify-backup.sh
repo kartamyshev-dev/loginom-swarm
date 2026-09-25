@@ -34,7 +34,7 @@ if [ -f "$backup_dir/worker.tar.gz" ]; then
   mkdir "$work_dir/worker"
   tar -xzf "$backup_dir/worker.tar.gz" -C "$work_dir/worker"
   python3 - "$work_dir/worker" <<'PYWORKER'
-import json, pathlib, stat, sys
+import hashlib, json, pathlib, stat, sys
 root=pathlib.Path(sys.argv[1])
 rows=json.loads((root/'etc/loginom-swarm/roles.json').read_text())
 assert rows
@@ -51,6 +51,24 @@ if publisher.exists():
  assert publisher.stat().st_mode & 0o077 == 0
  assert credential.read_bytes() == pathlib.Path('/var/lib/loginom-swarm-publisher/.config/gh/hosts.yml').read_bytes()
  print('Publisher OAuth profile restored separately; bytes and private modes match.')
+memory=root/'etc/loginom-swarm/memory-gateway.json'
+if (root/'opt/loginom-swarm/memory').exists():
+ assert memory.is_file() and memory.stat().st_mode & 0o027 == 0
+ assert (root/'var/lib/loginom-swarm-memory').is_dir()
+ assert (root/'etc/systemd/system/loginom-swarm-memory.service').is_file()
+ gateway=json.loads(memory.read_text())
+ for p in (root/'etc/loginom-swarm/memory-roles').glob('*.json'):
+  role=json.loads(p.read_text())
+  if role['status']!='active':continue
+  assert any(v['threadId']==role['threadId'] and v['role']==role['role'] for v in gateway['principals'].values())
+  profile=root/role['profile'].lstrip('/')
+  cursor=json.loads((profile/'swarm-memory'/(role['threadId']+'.json')).read_text())
+  assert cursor['codexSessionId']==role['threadId'] and cursor['workspacePeerId']==role['peer']
+  for entry in role['sealedFiles'].values():
+   file=root/entry['path'].lstrip('/')
+   assert hashlib.sha256(file.read_bytes()).hexdigest()==entry['sha256']
+   assert file.stat().st_mode & 0o022 == 0
+ print('Memory gateway, enrolled threads, capture cursors and sealed configuration restored consistently.')
 print('Worker archive extracted separately; registrations, directories and auth permissions verified.')
 PYWORKER
 fi
