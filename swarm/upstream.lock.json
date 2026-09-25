@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "repository": "https://github.com/paperclipai/paperclip.git",
+  "tag": "v2026.916.1",
+  "commit": "d554c4789ed3930f8a53ac9fdf6503b3187097da",
+  "paperclipVersion": "2026.916.1",
+  "codexVersion": "0.155.1",
+  "loginomRepository": "https://github.com/gooddaytoday/loginom-ai-agent.git",
+  "loginomCommit": "f81ebded7333ae7d974fdc5f87e8864cf75dd9c7",
+  "loginomCliVersion": "0.1.16",
+  "memoryPluginVersion": "0.8.1",
+  "memoryGeneration": "20260925.1"
+}

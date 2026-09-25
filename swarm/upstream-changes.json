@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "changes": [
+    {
+      "id": "SWARM-001",
+      "files": [
+        ".gitignore",
+        ".dockerignore"
+      ],
+      "problem": "Local deployment secrets and backups must not enter commits or Docker layers.",
+      "extensionRejected": "Ignore rules must apply at repository and build-context root.",
+      "contracts": "No application API or DB schema change.",
+      "tests": "git check-ignore plus build-context exclusion check",
+      "dataImpact": "No production data migration.",
+      "securityImpact": "Excludes environment files, keys, backups and generated runtime state.",
+      "upgradeImpact": "Review this entry during each stable-tag merge.",
+      "reference": "swarm-bootstrap (initial implementation; PR reference added on publication)",
+      "removeWhen": "Upstream exclusions cover all downstream secret paths."
+    },
+    {
+      "id": "SWARM-002",
+      "files": [
+        "AGENTS.md"
+      ],
+      "problem": "Contributors need the downstream operating contract and secret locations.",
+      "extensionRejected": "The root instruction file is the entry point for contributors.",
+      "contracts": "No application API or DB schema change.",
+      "tests": "Registry check and documentation review",
+      "dataImpact": "No production data migration.",
+      "securityImpact": "Documents secret handling without values.",
+      "upgradeImpact": "Review this entry during each stable-tag merge.",
+      "reference": "swarm-bootstrap (initial implementation; PR reference added on publication)",
+      "removeWhen": "Upstream provides a supported downstream instruction entry point."
+    },
+    {
+      "id": "SWARM-003",
+      "files": [
+        ".github/workflows/agent-runtime-images.yml",
+        ".github/workflows/cloud-migrator-artifacts.yml",
+        ".github/workflows/cloud-readiness.yml",
+        ".github/workflows/commitperclip-review.yml",
+        ".github/workflows/docker-cloud.yml",
+        ".github/workflows/docker-runner-check.yml",
+        ".github/workflows/docker.yml",
+        ".github/workflows/e2e.yml",
+        ".github/workflows/pr-trusted.yml",
+        ".github/workflows/pr.yml",
+        ".github/workflows/refresh-lockfile.yml",
+        ".github/workflows/release-smoke.yml",
+        ".github/workflows/release-verify.yml",
+        ".github/workflows/release.yml",
+        ".github/workflows/runner-chaos-evals.yml",
+        ".github/workflows/runner-full-stack-e2e.yml",
+        ".github/workflows/runner-live-evals.yml",
+        ".github/workflows/runner-protocol-live-evals.yml",
+        ".github/workflows/storybook-deploy.yml",
+        ".github/workflows/storybook-visual.yml"
+      ],
+      "problem": "Inherited release jobs target upstream publication and floating workflows.",
+      "extensionRejected": "GitHub executes root workflows; runtime configuration cannot disable individual inherited jobs.",
+      "contracts": "No application API or DB schema change.",
+      "tests": "Swarm workflows run only checks or explicit manual updates; archived workflows use .disabled suffix.",
+      "dataImpact": "No production data migration.",
+      "securityImpact": "Removes inherited publication, scheduled execution and upstream credential assumptions.",
+      "upgradeImpact": "Review this entry during each stable-tag merge.",
+      "reference": "swarm-bootstrap (initial implementation; PR reference added on publication)",
+      "removeWhen": "Upstream offers a safe downstream CI preset with pinned dependencies."
+    },
+    {
+      "id": "SWARM-004",
+      "files": [
+        "Dockerfile"
+      ],
+      "problem": "Upstream runtime installs floating model CLIs, preventing a pinned minimal Swarm tool layer.",
+      "extensionRejected": "The existing production RUN installs CLIs before downstream layers; uninstalling later retains their bytes.",
+      "contracts": "Optional CLI_PACKAGES build argument; default preserves upstream behavior.",
+      "tests": "Source image build with only @openai/codex@0.155.1; version smoke after build.",
+      "dataImpact": "No database changes.",
+      "securityImpact": "Limits installed tools to the reviewed Codex version; adds no runtime secrets.",
+      "upgradeImpact": "Review production tool installation RUN on each stable merge.",
+      "reference": "swarm-bootstrap",
+      "removeWhen": "Upstream supports a reviewed configurable CLI package list."
+    },
+    {
+      "id": "SWARM-005",
+      "files": [
+        "scripts/release-lib.test.mjs",
+        "scripts/__tests__/storybook-deploy.test.mjs",
+        "scripts/cloud-migrator-artifacts.test.mjs",
+        "scripts/preview-artifacts.test.mjs",
+        "scripts/__tests__/e2e-shard.test.mjs",
+        "server/src/__tests__/cloud-image-bundled-plugins.test.ts",
+        "server/src/__tests__/docker-build-stamp.test.ts",
+        "server/src/__tests__/cloud-image-sentry.test.ts",
+        "server/src/__tests__/container-init-reaping.test.ts",
+        "scripts/service-onboard-smoke.test.mjs",
+        "scripts/docker-onboard-smoke.test.mjs"
+      ],
+      "problem": "Upstream workflow contract tests read workflow files from their former active locations.",
+      "extensionRejected": "Tests must read retained source fixtures after workflows move out of the executable GitHub directory.",
+      "contracts": "Only test fixture paths change; assertions and upstream contracts remain intact.",
+      "tests": "Run archived workflow contract tests and the full application suite.",
+      "dataImpact": "No runtime or database changes.",
+      "securityImpact": "Keeps upstream publication fixtures outside executable workflows.",
+      "upgradeImpact": "Reconcile fixture path changes if upstream restructures these tests.",
+      "reference": "swarm-bootstrap",
+      "removeWhen": "Upstream separates workflow fixtures from active workflow locations."
+    }
+  ]
+}

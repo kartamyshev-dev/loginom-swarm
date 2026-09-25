@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "companyId": "428979e0-2e82-476d-9448-506379c83ac9",
+  "projectId": "148af952-3d5d-4a4a-9257-1884ee15d552",
+  "originIssueId": "0e7545f3-ca81-4391-9409-1a4d6fb8a875",
+  "pipelineKey": "loginom-swarm",
+  "node": "sampling",
+  "sourceRepository": "https://github.com/gooddaytoday/loginom-ai-agent.git",
+  "sourceBranch": "loginom",
+  "sourceCommit": "f81ebded7333ae7d974fdc5f87e8864cf75dd9c7",
+  "execution": "unprivileged-host-service",
+  "manualStartOnly": true,
+  "nextNodeAutomatic": false,
+  "mergeAutomatic": false,
+  "releaseAutomatic": false,
+  "maxCorrectionCycles": 2,
+  "acceptanceTimeoutSeconds": 1800,
+  "activeNodeTimeoutSeconds": 28800,
+  "models": {
+    "developer": {
+      "id": "gpt-6-astra",
+      "effort": "medium"
+    },
+    "reviewer": {
+      "id": "gpt-6-astra",
+      "effort": "medium"
+    },
+    "acceptance": {
+      "id": "openai/gpt-6-sol",
+      "effort": "low"
+    }
+  },
+  "githubConnectionId": "26610ae5-466f-4c30-a9ce-7736678aa1d7",
+  "publisherAgentId": "e7e6aed2-95b5-41ed-bccc-21f1bd2b7015",
+  "memoryPeer": "viking://user/kartamyshev/peers/-Users-kartamyshev-Git-loginom-ai-agent/memories",
+  "setupStatus": "incomplete",
+  "pipelineId": "c92742f4-f55a-42e3-9c3b-93b58da4f2a6",
+  "caseId": "038456b1-e389-4724-a212-436bb4dbd197"
+}

@@ -1,5 +1,27 @@
 # AGENTS.md
 
+## Loginom Swarm deployment
+
+This is the Loginom Swarm fork. Read `doc/loginom-swarm/README.md` and the
+current checkpoint before changing its integration. Upstream application code
+stays compatible with `swarm/upstream.lock.json`. Record every upstream file
+change in `swarm/upstream-changes.json`; run the registry check before a PR.
+Use short branches targeting `swarm`. Never publish upstream npm releases.
+
+Server access and local owner API credentials are in the root `.env` (0600).
+Read credentials without printing them. Never copy secrets into documentation,
+logs, memory, commits, images, or model environments. Keep `private/` and backups
+out of Git and Docker contexts. The old `paperclip` directory is retained.
+
+Sampling processing requires the user's manual start in Paperclip. Setup and
+infrastructure tests do not authorize a node run, merge, release, or next node.
+Independent review is explicitly approved by the owner for this integration.
+Do not change the source project's local memory generation 20260924.1.
+Keep incomplete verification gates closed; never fabricate readiness receipts.
+PR checklist entries describe actual results, even when a template asks for all
+entries to be checked. This fork's release and lock manifests are maintained
+through its reviewed PR workflow.
+
 Guidance for human and AI contributors working in this repository.
 
 ## 1. Purpose

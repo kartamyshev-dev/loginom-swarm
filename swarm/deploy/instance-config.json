@@ -1,0 +1,17 @@
+{
+  "$meta": {"version": 1, "updatedAt": "2026-09-25T00:00:00Z", "source": "configure"},
+  "database": {"mode": "postgres", "backup": {"enabled": false}},
+  "logging": {"mode": "file", "logDir": "/paperclip/instances/default/logs"},
+  "server": {
+    "deploymentMode": "authenticated",
+    "exposure": "public",
+    "bind": "custom",
+    "customBindHost": "0.0.0.0",
+    "host": "0.0.0.0",
+    "port": 3100,
+    "serveUi": true
+  },
+  "auth": {"baseUrlMode": "explicit", "publicBaseUrl": "https://paperclip.kartamyshev.dev"},
+  "storage": {"provider": "local_disk", "localDisk": {"baseDir": "/paperclip/instances/default/data/storage"}},
+  "secrets": {"provider": "local_encrypted", "strictMode": true, "localEncrypted": {"keyFilePath": "/paperclip/instances/default/secrets/master.key"}}
+}

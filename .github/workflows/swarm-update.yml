@@ -1,0 +1,67 @@
+name: Prepare Paperclip update
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Stable Paperclip tag, for example v2026.916.1
+        required: true
+        type: string
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/swarm'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Commit identity
+        run: |
+          git config --global user.name 'loginom-swarm[bot]'
+          git config --global user.email 'loginom-swarm[bot]@users.noreply.github.com'
+      - name: Prepare isolated update
+        id: update
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: python3 swarm/scripts/update-upstream.py "$RELEASE_TAG" --output "$RUNNER_TEMP/update-report"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Commit the candidate before stamping builds
+        working-directory: ${{ steps.update.outputs.worktree }}
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          git add -A
+          git commit -m "Update Paperclip to $RELEASE_TAG"
+      - name: Verify candidate
+        working-directory: ${{ steps.update.outputs.worktree }}
+        run: |
+          python3 swarm/scripts/check-upstream.py
+          python3 -m unittest discover -s swarm/tests -v
+          pnpm install --frozen-lockfile
+          pnpm -r typecheck
+          pnpm test:run
+          pnpm build
+          bash swarm/scripts/build-image.sh ghcr.io/kartamyshev-dev/loginom-swarm:update-check
+      - name: Commit and propose
+        working-directory: ${{ steps.update.outputs.worktree }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          UPDATE_BRANCH: ${{ steps.update.outputs.branch }}
+        run: |
+          git push origin "$UPDATE_BRANCH"
+          python3 swarm/scripts/update-pr-body.py "$RELEASE_TAG" > "$RUNNER_TEMP/update-body.md"
+          gh pr create --repo kartamyshev-dev/loginom-swarm --base swarm --head "$UPDATE_BRANCH" --title "Update Paperclip to $RELEASE_TAG" --body-file "$RUNNER_TEMP/update-body.md"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: upstream-update-report
+          path: ${{ runner.temp }}/update-report

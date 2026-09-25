@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "campaign_id": "paperclip-sampling-pilot",
+  "mode": "single",
+  "authorized_nodes": [
+    "component.preprocessing.Sampling"
+  ],
+  "auto_continue_authorized_queue": false,
+  "developer_slots": 1,
+  "acceptance_slots": 1,
+  "base": {
+    "repository": "https://github.com/gooddaytoday/loginom-ai-agent.git",
+    "branch": "loginom",
+    "commit": "f81ebded7333ae7d974fdc5f87e8864cf75dd9c7"
+  },
+  "models": {
+    "developer": {
+      "model": "gpt-6-astra",
+      "effort": "medium"
+    },
+    "review": {
+      "model": "gpt-6-astra",
+      "effort": "medium"
+    },
+    "acceptance": {
+      "model": "openai/gpt-6-sol",
+      "variant": "low",
+      "credential_source": "existing-chatgpt-oauth"
+    }
+  },
+  "acceptance_timeout_seconds": 1800,
+  "execution_status": "preparation_only",
+  "phase": "admission",
+  "host": "82.22.23.10",
+  "execution_user": "loginom-worker",
+  "repository_path": "/opt/loginom-worker/repo",
+  "worktree_path": "/opt/loginom-worker/repo/.worktrees/sampling-pilot",
+  "branch": "sampling-pilot",
+  "paperclip": {
+    "company_id": "428979e0-2e82-476d-9448-506379c83ac9",
+    "environment_id": "4ac32da8-388e-407b-be96-c0de17916ffa",
+    "project_id": "148af952-3d5d-4a4a-9257-1884ee15d552",
+    "agent_id": "c49d36f3-1b4d-4f09-8184-acc73daef2c5",
+    "issue_id": "0e7545f3-ca81-4391-9409-1a4d6fb8a875",
+    "issue_identifier": "KAR-2"
+  },
+  "admission": {
+    "resource_load_test": "pending",
+    "developer_oauth": "pending",
+    "acceptance_oauth": "pending",
+    "loginom_connection": "pending",
+    "memory_enrollment": "pending",
+    "paperclip_configuration": "staged_paused"
+  },
+  "resources": {
+    "host_registry": "/opt/loginom-worker/.local/state/loginom-ai-agent/node-development/host-resources.json",
+    "developer_leases": [],
+    "acceptance_lease": null,
+    "shared_contract_owners": []
+  },
+  "assignments": [],
+  "dispatches": [],
+  "events": [],
+  "launch_policy": {
+    "initiator": "user_in_paperclip_ui",
+    "automatic_start": false,
+    "scheduled_runs": false,
+    "initial_agent_status": "paused",
+    "initial_issue_status": "backlog",
+    "continue_to_next_node": false
+  }
+}
