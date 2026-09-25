@@ -86,3 +86,8 @@ https://github.com/gooddaytoday/loginom-ai-agent/pull/2, закрытый без
 hosts.yml имеет 0600. Ветка оставлена как доказательство проверки.
 В Paperclip обновлены metadata/capabilities publisher, status=paused, command=false.
 Токены с Mac не копировались. Publisher и Sampling остаются остановлены.
+
+Личная GitHub публикация: реализация d7809bab9 в draft PR1. Снимок
+20260925T011019Z завершён, целевое восстановление нового OAuth-профиля прошло:
+данные и закрытые права совпали. Полная повторная проверка БД этого снимка
+не выполнялась; предыдущие restore proofs остаются в VALIDATION.md.

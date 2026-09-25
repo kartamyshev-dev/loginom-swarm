@@ -100,3 +100,9 @@ permissions.push=true для gooddaytoday/loginom-ai-agent. Реальный Git
 Токен 0600 в отдельном UID999, worker UID1000 не может его читать.
 Проверены shell syntax, Python compilation, 20 контрактных тестов и registry.
 Автоматический координатор ещё не интегрирован; Sampling не запускался.
+
+Backup 20260925T011019Z завершён успешно. Из его worker archive в отдельный
+временный каталог восстановлены publisher home, .config/gh и hosts.yml:
+credential bytes совпали с сервером, права каталогов/файла закрыты (PASS).
+Это целевая проверка добавленного профиля; полный DB restore этого снимка
+повторно не выполнялся. После backup Paperclip/DB healthy, host worker active.
