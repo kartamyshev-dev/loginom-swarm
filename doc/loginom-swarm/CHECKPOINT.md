@@ -1,7 +1,8 @@
 # Состояние реализации — 2026-09-25
 
 Рабочая ветка: `swarm-bootstrap`. `origin/swarm` пока содержит только базовый тег.
-Изменения ещё не приняты через PR. Старый сервер Paperclip продолжает работу.
+Черновой PR: https://github.com/kartamyshev-dev/loginom-swarm/pull/1
+Первый commit 880b7d3a3. Изменения ещё не приняты в swarm. Старый сервер Paperclip продолжает работу.
 
 - Cloud enrollment: active; instance inst_a03bb598-b988-41a9-aeb4-3fccd41202f0.
 - GitHub connection 26610ae5-466f-4c30-a9ce-7736678aa1d7: active personal OAuth,
@@ -11,7 +12,7 @@
   publisher paused, command /usr/bin/false, heartbeat/wakeOnDemand выключены.
 - Codex developer и reviewer: сервер подтвердил Logged in using ChatGPT.
 - Standalone CLI acceptance: OpenAI oauth подтверждён providers list.
-- Astra medium smoke PASS; Sol доступен в каталоге CLI, короткий запрос проверяется.
+- Astra medium smoke PASS; Sol low через standalone CLI: короткий запрос PASS, без tools.
 - Linux memory и resource peaks ещё не проверены.
 - Компания 428979e0-2e82-476d-9448-506379c83ac9, проект
   148af952-3d5d-4a4a-9257-1884ee15d552; существующий Sampling issue/agent сохраняются.
@@ -47,3 +48,8 @@ workflow fixtures. Полный test:run ещё не зелёный; подро�
 Linux memory с настоящими hooks/enrollment, полная CLI-сборка, независимая
 приёмка и измерения ресурсов, расширенные backups, CI и source-built deployment.
 Пустой transport/setup service не считать готовым исполнителем кампании.
+
+Backup 20260925T002721Z: восстановлена отдельная БД, 210 таблиц, fingerprint
+строк совпал со снимком. Worker archive извлечён и проверен. После рестарта
+11 sandbox checks × 3 роли + 6 negative RPC прошли повторно; health production ok.
+Полная CLI build/resource probe выполняется через отдельный systemd scope.

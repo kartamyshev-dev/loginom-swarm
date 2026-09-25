@@ -44,3 +44,14 @@ Sol low: короткий запрос через standalone CLI заверши�
 без tool_use. Проверка вызвала реальную модель openai/gpt-6-sol, variant low.
 Host worker: 11 проверок каждой из трёх ролей и 6 negative RPC PASS.
 Python integration policy: 12 tests PASS.
+
+Backup restore PASS: 20260925T002721Z, 210 таблиц и точное совпадение fingerprint
+строк; отдельная распаковка worker profiles/state/config. Проверки изоляции
+повторены после restart. Backup ждёт heavy lock до 8 часов, службы не останавливаются
+во время активной работы. CLI acceptance получает STRICT_RECOVERY=1: неизвестная
+мутация должна блокировать продолжение; новый профиль ещё не проверен live.
+
+На GitHub contracts PASS для 880b7d3a3; application CI ещё выполняется.
+Унаследованный commitperclip dependency-review завершился ошибкой: dependency
+graph не включён в форке. Этот устаревший workflow отключён через API; новый
+Swarm CI остаётся включён. Это не ошибка тестов приложения.

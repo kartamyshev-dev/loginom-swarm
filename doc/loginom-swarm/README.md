@@ -55,6 +55,7 @@ Loginom Swarm сохраняет Paperclip как систему задач, pip
 
 - [Обновление и откат](UPSTREAM.md)
 - [Проверки и совместимость](VALIDATION.md)
+- [Резервное копирование и восстановление](BACKUP-RESTORE.md)
 - [Журнал изменений](CHANGELOG.md)
 - [План реализации](../plans/2026-09-25-loginom-swarm.md)
 

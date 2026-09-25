@@ -20,7 +20,8 @@ def model_environment(source, role, profile):
     result.update(HOME=profile, TMPDIR="/tmp", PATH="/opt/loginom-swarm/runtime/bin:/usr/local/bin:/usr/bin:/bin",
                   LANG=result.get("LANG", "C.UTF-8"), GIT_TERMINAL_PROMPT="0")
     if role == "acceptance":
-        result.update(LOGINOM_AI_AGENT_CLI_PROFILE=profile, DISPLAY=":99")
+        result.update(LOGINOM_AI_AGENT_CLI_PROFILE=profile, DISPLAY=":99",
+                      LOGINOM_AI_AGENT_STRICT_RECOVERY="1", LOGINOM_AI_AGENT_SYSTEM_PROXY="off")
     else:
         result["CODEX_HOME"] = profile
     return result

@@ -7,4 +7,4 @@ After=docker.service
 Type=oneshot
 UMask=0077
 ExecStart=/opt/paperclip/scripts/backup.sh
-TimeoutStartSec=30min
+TimeoutStartSec=9h

@@ -17,17 +17,15 @@ docker compose exec -T db createdb -U paperclip "$test_db"
 created=true
 docker compose exec -T db pg_restore -U paperclip -d "$test_db" --exit-on-error < "$backup_dir/database.dump"
 docker compose exec -T db psql -X -U paperclip -d "$test_db" -v ON_ERROR_STOP=1 -c "SELECT count(*) AS restored_public_tables FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'; SELECT count(*) AS restored_invites FROM invites;"
-# Compare canonical table contents with the current idle instance; run this check
-# immediately after a backup and before users begin changing application data.
-for database in paperclip "$test_db"; do
-  docker compose exec -T db psql -X -A -t -U paperclip -d "$database" -v ON_ERROR_STOP=1 > "$work_dir/$database.sql" <<'SQL'
-SELECT format('SELECT %L, COALESCE(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text), %L::jsonb) FROM %I.%I t;', schemaname || '.' || tablename, '[]', schemaname, tablename)
-FROM pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema') ORDER BY schemaname, tablename
-\gexec
-SQL
-done
-cmp -s "$work_dir/paperclip.sql" "$work_dir/$test_db.sql"
-echo 'Restored database data matches the live idle database.'
+# Compare to the snapshot taken while Paperclip was stopped, not the restarted
+# production database (which has legitimate heartbeat/audit changes).
+if [ -f "$backup_dir/database.rows.sha256" ]; then
+  /opt/paperclip/scripts/database-fingerprint.sh "$test_db" > "$work_dir/restored.rows.sha256"
+  cmp -s "$backup_dir/database.rows.sha256" "$work_dir/restored.rows.sha256"
+  echo 'Restored database rows match the backup snapshot fingerprint.'
+else
+  echo 'Legacy backup restored; snapshot row fingerprint is not available.'
+fi
 tar -xzf "$backup_dir/files.tar.gz" -C "$work_dir" ./data/paperclip/instances/default/config.json 2>/dev/null ||
   tar -xzf "$backup_dir/files.tar.gz" -C "$work_dir" data/paperclip/instances/default/config.json
 cmp -s data/paperclip/instances/default/config.json "$work_dir/data/paperclip/instances/default/config.json"

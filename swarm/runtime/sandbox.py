@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from environment import model_environment
 
 ROOT = Path('/opt/loginom-worker')
-TOOLS = Path('/opt/loginom-swarm/toolchains/20260925.1')
+TOOLS = Path('/opt/loginom-swarm/toolchains')
 ROLE_NAMES = {'developer', 'reviewer', 'acceptance'}
 
 

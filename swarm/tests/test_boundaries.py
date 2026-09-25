@@ -25,6 +25,10 @@ class BoundaryTests(unittest.TestCase):
         clean = env.model_environment(source, "developer", "/opt/loginom-worker/profiles/sampling/developer")
         self.assertFalse(set(source) & set(clean))
 
+    def test_acceptance_keeps_uncertain_mutations_blocked(self):
+        clean = env.model_environment({}, "acceptance", "/opt/loginom-worker/profiles/sampling/acceptance")
+        self.assertEqual(clean["LOGINOM_AI_AGENT_STRICT_RECOVERY"], "1")
+
     def test_cross_role_profile_rejected(self):
         with self.assertRaises(ValueError):
             env.model_environment({}, "reviewer", "/opt/loginom-worker/profiles/sampling/developer")
