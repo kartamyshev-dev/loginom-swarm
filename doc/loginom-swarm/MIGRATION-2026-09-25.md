@@ -122,3 +122,30 @@ CI: два отказа в неизменённом upstream chat-channels.integ
 для commit e6785fd32 теперь успешны (application, image, contracts, все тестовые
 группы). Более поздние миграционные scripts d187dff42/a2ad4608b проверены
 синтаксически и ревью; их фактическое исполнение отмечать отдельно.
+
+## Проверка снимка завершена
+
+Назначение: loginom-migration-verify.service завершилась inactive/success/exit0.
+Receipt: verified=true, extracted=true, files=803875. Первая сверка содержимого,
+remap служебных UID/GID и повторная сверка после remap прошли успешно.
+Запущена loginom-migration-promote.service: установка файлов в рабочие каталоги,
+LAN config и persistent activation gates. Пока она активна, reboot не выполнять.
+Восстановление БД, запуск сервисов и Sampling не выполнялись.
+На сервер размещена, но не запускалась, deployment/restore-database.sh.
+
+## Безопасная точка перед перезагрузкой CPU
+
+Promotion завершился inactive/success/exit0. Файлы установлены; БД ещё не
+восстановлена, сервисы не запускались. Подтверждено: контейнеров Paperclip нет,
+worker/memory/backup inactive, worker/memory/backup timer disabled, marker
+activation-approved отсутствует, постоянные gates установлены. Системные
+каталоги root:root0755, серверный .env root:root0600. Выполнен sync.
+На назначении сохранён private /var/lib/loginom-migration/pre-reboot.json
+с исходным boot ID и receipts. Пользователь может применить новый CPU reboot.
+
+Продолжение после сообщения пользователя: проверить новый boot ID, флаги
+AVX/AVX2, VPN/firewall/exit IP185.21.15.251, отсутствие самозапуска сервиса.
+Затем проверить Bun/CLI версии без Loginom tools, выполнить reviewed
+/var/lib/loginom-migration/deployment/restore-database.sh с exact machine ID,
+сверить fingerprint; только после этого квалифицировать и активировать сервисы.
+Полный перенос и cutover ещё не завершены. Исходный VPS остаётся замороженным.
