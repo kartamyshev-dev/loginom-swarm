@@ -128,3 +128,31 @@ publisher bytes/modes, memory thread/cursor/sealed hashes PASS. См. MEMORY.md.
 по-прежнему не готовы. Следом: финальная синхронизация runtime, restart/boundary
 checks, новый snapshot schema2, commit/PR и полный CI; далее независимая Loginom
 приёмка и настоящий stage runner/publisher. Узел запускает только пользователь.
+
+
+## Текущая точка продолжения — CLI infrastructure BLOCKED, 25.09.2026
+
+HEAD форка опубликован: `44b9dca5acb78462d3b345431e75d1f9b0ab1444`, draft PR #1.
+Worker после финального обновления прошёл проверки границ; оба MCP memory профиля
+проверены повторно. Backup `20260925T071935Z` восстановлен отдельно: контрольные
+суммы, DB210/fingerprint, publisher bytes/modes, memory thread/cursor/sealed config PASS.
+
+Реальная Sol low инфраструктурная приёмка CLI0.1.16 остановилась на проверке
+загруженного CSV: `DISCOVERY_DIRECTORY_CHANGED`, exit4, сохранения результата нет.
+Подробности и доказательства: [CLI-INFRASTRUCTURE-2026-09-25.md](CLI-INFRASTRUCTURE-2026-09-25.md).
+Повторный доступ к общему Loginom аккаунту заблокирован durable journal;
+6 штатных recovery записей сохраняются, remote cleanup не подтверждён.
+Sampling остаётся setup; узел не запускался. Не объявлять Loginom gate PASS.
+
+Следующие работы: разбор/устранение CLI blocker с сохранением исходных receipts;
+полный node stage runner и publisher integration; отдельный development Loginom
+профиль после reconciliation; квалификация всех отказов; live upstream-update
+workflow; завершение CI; source-built production deployment и ручная передача.
+Qualification/barrier файлы сохраняются локальным commit; push не должен
+прерывать текущий полный CI `36107169612` на `44b9dca5a`.
+
+Пользователь решил обновить CLI отдельно. Не менять исходники loginom-ai-agent
+и не создавать исправление CLI в этой задаче. Это внешний незакрытый gate;
+новую версию и reconciliation нужно подтвердить перед следующим Loginom тестом.
+Отчёт опубликован и прочитан обратно через native case document
+`infrastructure-qualification`; case всё ещё setup/manualStart=false.

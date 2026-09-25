@@ -138,3 +138,18 @@ PASS. Typecheck и image прошли; general server/UI/workspace части т
 тот же набор штатными upstream группами: 316+333=649 general server suites,
 72+75=147 serialized suites, плюс обе полные группы workspaces. Проверены отсутствие
 пересечений и полнота выбора. Новый удалённый прогон ещё не подтверждён.
+
+
+## Повторное восстановление и реальная CLI-проверка
+
+Backup `20260925T071935Z`: sha256 всех архивов PASS; восстановленная отдельно БД
+содержит 210 таблиц, fingerprint совпал; persistent config, publisher OAuth
+bytes/modes, memory registrations/cursors/sealed hashes PASS. Production данные
+не заменялись восстановленной копией.
+Отдельно прочитаны оба gateway journal из архива: schema2, положительные offsets,
+все сохранённые операции completed. Локальные проверки Swarm: 43 tests PASS.
+
+Реальный CLI0.1.16/Sol low прогон на поддержанных import/grouping: **BLOCKED**.
+Не считать успешные OAuth, login и отправку CSV успешной приёмкой. Причина отказа,
+ресурсы, сохранённые recovery записи и порядок продолжения —
+[отчёт](CLI-INFRASTRUCTURE-2026-09-25.md).

@@ -31,7 +31,13 @@ def main():
     results={}
     for role in ['developer','reviewer','acceptance']:
         status, result=request('POST','/v1/probe',{'campaign':'infrastructure','role':role})
-        assert status == 200 and len(result['checks']) == 11 and all(result['checks'].values()), result
+        required = {'uid', 'control_plane_hidden', 'control_socket_hidden', 'docker_hidden',
+                    'host_root_hidden', 'memory_master_hidden', 'publisher_profile_hidden',
+                    'worker_state_hidden', 'foreign_profiles_hidden', 'private_pid_namespace',
+                    'secret_environment_removed', 'workspace_write_policy', 'profile_writable'}
+        if role == 'acceptance':
+            required.add('development_memory_hidden')
+        assert status == 200 and required <= result['checks'].keys() and all(result['checks'].values()), result
         results[role]=result['checks']
     # The model/client must never supply a command, inherited env, mounts, or path.
     for body in [
