@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 test "$(id -u)" = 0
+export DEBIAN_FRONTEND=noninteractive
+apt-get install -y --no-install-recommends build-essential
 root=/opt/loginom-swarm/toolchains
 version=node-v24.19.0-linux-x64
 test ! -e "$root/$version" || exit 0
@@ -16,6 +18,7 @@ mv "$stage/$version" "$root/$version"
 install -d -m 755 /opt/loginom-swarm/runtime/bin
 ln -s "$root/$version/bin/node" /opt/loginom-swarm/runtime/bin/node
 ln -s "$root/20260925.1/bun-linux-x64/bun" /opt/loginom-swarm/runtime/bin/bun
+ln -s "$root/$version/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js" /opt/loginom-swarm/runtime/bin/node-gyp
 # Preserve the downloaded checksum list as build provenance; no credentials here.
 mv "$stage/SHASUMS256.txt" "$root/$version/SHASUMS256.txt"
 rm "$stage/$version.tar.xz"

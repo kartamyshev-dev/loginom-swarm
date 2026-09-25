@@ -28,7 +28,7 @@ unzip -q "$stage/bun.zip" -d "$stage"
 test "$("$stage/bun-linux-x64/bun" -e 'console.log(process.versions.bun + " " + Bun.revision)')" = '1.3.14 0d9b296af33f2b851fcbf4df3e9ec89751734ba4'
 rm "$stage/cli.tar.gz" "$stage/bun.zip"
 chown -R root:root "$stage"
-chmod -R go-w "$stage"
+chmod -R a+rX,go-w "$stage"
 chmod 755 "$stage"
 mv "$stage" "$runtime"
 echo 'Pinned toolchain installed. No model run or profile activation was performed.'

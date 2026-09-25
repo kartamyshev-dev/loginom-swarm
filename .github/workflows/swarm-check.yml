@@ -35,3 +35,14 @@ jobs:
       - run: pnpm -r typecheck
       - run: pnpm test:run
       - run: pnpm build
+
+  image:
+    needs: contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build from the exact fork commit
+        run: bash swarm/scripts/build-image.sh ghcr.io/kartamyshev-dev/loginom-swarm:ci-${{ github.sha }}

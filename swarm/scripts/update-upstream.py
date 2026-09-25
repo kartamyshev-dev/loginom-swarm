@@ -29,7 +29,15 @@ def main():
     run("git", "fetch", "https://github.com/paperclipai/paperclip.git",
         f"refs/tags/{args.tag}")
     target = run("git", "rev-parse", "FETCH_HEAD^{commit}").stdout.strip()
-    branch = f"update/paperclip-{args.tag}"
+    prepare(ROOT, args.tag, target, args.output)
+
+
+def prepare(root, tag, target, output_dir):
+    """Isolated merge; injectable repository only for local fixture tests."""
+    def run(*args, cwd=None, check=True):
+        return subprocess.run(args, cwd=cwd or root, text=True, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, check=check)
+    branch = f"update/paperclip-{tag}"
     if run("git", "show-ref", "--verify", f"refs/heads/{branch}", check=False).returncode == 0:
         raise SystemExit("Update branch already exists; inspect it before retrying")
     directory = Path(tempfile.mkdtemp(prefix="loginom-swarm-update-")) / "checkout"
@@ -37,11 +45,11 @@ def main():
     old = json.loads((directory / "swarm/upstream.lock.json").read_text())
     result = run("git", "merge", "--no-commit", "--no-ff", target, cwd=directory, check=False)
     conflicts = run("git", "diff", "--name-only", "--diff-filter=U", cwd=directory).stdout.splitlines()
-    report = {"tag": args.tag, "commit": target, "previousCommit": old["commit"],
+    report = {"tag": tag, "commit": target, "previousCommit": old["commit"],
               "branch": branch, "worktree": str(directory), "conflicts": conflicts,
               "status": "conflict" if conflicts else "prepared" if result.returncode == 0 else "failed",
               "deploymentChanged": False}
-    (args.output / "update-report.json").write_text(json.dumps(report, indent=2) + "\n")
+    (output_dir / "update-report.json").write_text(json.dumps(report, indent=2) + "\n")
     if result.returncode:
         print(json.dumps(report, indent=2))
         # Retain isolated worktree/index for diagnosis, never abort someone else's merge.
@@ -61,15 +69,15 @@ def main():
             dst.write_bytes(src.read_bytes())
             src.unlink()
     registry_path.write_text(json.dumps(registry, indent=2) + "\n")
-    old.update(tag=args.tag, commit=target, paperclipVersion=args.tag[1:])
+    old.update(tag=tag, commit=target, paperclipVersion=tag[1:])
     (directory / "swarm/upstream.lock.json").write_text(json.dumps(old, indent=2) + "\n")
     report_dir = directory / "doc/loginom-swarm/updates"
     report_dir.mkdir(exist_ok=True)
     # Local path is intentionally excluded from the committed report.
-    (report_dir / (args.tag + ".json")).write_text(json.dumps(
+    (report_dir / (tag + ".json")).write_text(json.dumps(
         {k: v for k, v in report.items() if k != "worktree"}, indent=2) + "\n")
     diff = run("git", "diff", "--stat", target, cwd=directory).stdout
-    (args.output / "divergence.txt").write_text(diff)
+    (output_dir / "divergence.txt").write_text(diff)
     run("python3", "swarm/scripts/check-upstream.py", cwd=directory)
     print(json.dumps(report, indent=2))
     if os.getenv("GITHUB_OUTPUT"):

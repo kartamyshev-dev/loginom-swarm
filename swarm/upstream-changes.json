@@ -14,7 +14,7 @@
       "dataImpact": "No production data migration.",
       "securityImpact": "Excludes environment files, keys, backups and generated runtime state.",
       "upgradeImpact": "Review this entry during each stable-tag merge.",
-      "reference": "swarm-bootstrap (initial implementation; PR reference added on publication)",
+      "reference": "https://github.com/kartamyshev-dev/loginom-swarm/pull/1 (initial source commit 880b7d3a3)",
       "removeWhen": "Upstream exclusions cover all downstream secret paths."
     },
     {
@@ -29,7 +29,7 @@
       "dataImpact": "No production data migration.",
       "securityImpact": "Documents secret handling without values.",
       "upgradeImpact": "Review this entry during each stable-tag merge.",
-      "reference": "swarm-bootstrap (initial implementation; PR reference added on publication)",
+      "reference": "https://github.com/kartamyshev-dev/loginom-swarm/pull/1 (initial source commit 880b7d3a3)",
       "removeWhen": "Upstream provides a supported downstream instruction entry point."
     },
     {
@@ -63,7 +63,7 @@
       "dataImpact": "No production data migration.",
       "securityImpact": "Removes inherited publication, scheduled execution and upstream credential assumptions.",
       "upgradeImpact": "Review this entry during each stable-tag merge.",
-      "reference": "swarm-bootstrap (initial implementation; PR reference added on publication)",
+      "reference": "https://github.com/kartamyshev-dev/loginom-swarm/pull/1 (initial source commit 880b7d3a3)",
       "removeWhen": "Upstream offers a safe downstream CI preset with pinned dependencies."
     },
     {
@@ -78,7 +78,7 @@
       "dataImpact": "No database changes.",
       "securityImpact": "Limits installed tools to the reviewed Codex version; adds no runtime secrets.",
       "upgradeImpact": "Review production tool installation RUN on each stable merge.",
-      "reference": "swarm-bootstrap",
+      "reference": "https://github.com/kartamyshev-dev/loginom-swarm/pull/1 (initial source commit 880b7d3a3)",
       "removeWhen": "Upstream supports a reviewed configurable CLI package list."
     },
     {
@@ -103,7 +103,7 @@
       "dataImpact": "No runtime or database changes.",
       "securityImpact": "Keeps upstream publication fixtures outside executable workflows.",
       "upgradeImpact": "Reconcile fixture path changes if upstream restructures these tests.",
-      "reference": "swarm-bootstrap",
+      "reference": "https://github.com/kartamyshev-dev/loginom-swarm/pull/1 (initial source commit 880b7d3a3)",
       "removeWhen": "Upstream separates workflow fixtures from active workflow locations."
     }
   ]

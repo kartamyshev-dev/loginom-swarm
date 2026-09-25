@@ -6,10 +6,14 @@ expected=${1:?Pinned source commit required}
 [[ "$expected" =~ ^[a-f0-9]{40}$ ]] || exit 2
 work=/opt/loginom-worker/workspaces/infrastructure/developer
 cd "$work"
-test ! -e source || { echo 'Existing candidate checkout requires reconciliation.' >&2; exit 1; }
-git clone --no-checkout https://github.com/gooddaytoday/loginom-ai-agent.git source
+if [ ! -e source ]; then
+  git clone --no-checkout https://github.com/gooddaytoday/loginom-ai-agent.git source
+  git -C source checkout --detach "$expected"
+fi
 cd source
-git checkout --detach "$expected"
+test -d .git
+git diff --quiet
+git diff --cached --quiet
 test "$(git rev-parse HEAD)" = "$expected"
 export HUSKY=0 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 bun install --frozen-lockfile
