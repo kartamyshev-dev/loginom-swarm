@@ -34,3 +34,17 @@ gh workflow run swarm-update.yml --repo kartamyshev-dev/loginom-swarm --ref swar
 успешный merge архивирует новый upstream workflow и фиксирует target SHA;
 конфликт оставляет точный отчёт и отдельный worktree, рабочая ветка не меняется.
 Это не заменяет живой запуск GitHub workflow после принятия bootstrap PR.
+
+Публикация собственного образа после принятия кода в `swarm` выполняется отдельно:
+
+```sh
+gh workflow run swarm-release.yml --repo kartamyshev-dev/loginom-swarm --ref swarm -f version=0.1.0
+```
+
+Workflow повторяет проверки, собирает исходники точного commit, публикует только
+`ghcr.io/kartamyshev-dev/loginom-swarm` и прикладывает RepoDigest. SSH-секретов в CI
+нет. Этот release workflow подготовлен, но ещё не выполнялся. Для последующего
+ручного deploy использовать `compose.yaml` вместе с `compose.swarm.yaml`, задав
+`SWARM_IMAGE` полным `ghcr.io/kartamyshev-dev/loginom-swarm@sha256:...`. Override
+монтирует только приватный control socket службы. До полного live допуска и
+проверки миграций production остаётся на прежнем образе.

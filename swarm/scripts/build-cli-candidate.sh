@@ -24,7 +24,7 @@ bun run packages/loginom-host/script/build-cli.ts "$work/cli-candidate"
 test -f "$work/cli-candidate/cli-manifest.json"
 python3 - "$work/cli-candidate/cli-manifest.json" "$expected" <<'PY'
 import json,sys
-m=json.load(open(sys.argv[1]))
+m=json.load(open(sys.argv[1]))['metadata']
 assert m['sourceCommit']==sys.argv[2] and m['sourceDirty'] is False
 print('CLI_CANDIDATE_BUILD_PASS')
 PY

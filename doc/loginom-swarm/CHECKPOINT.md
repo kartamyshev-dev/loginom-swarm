@@ -52,4 +52,9 @@ Linux memory с настоящими hooks/enrollment, полная CLI-сбор
 Backup 20260925T002721Z: восстановлена отдельная БД, 210 таблиц, fingerprint
 строк совпал со снимком. Worker archive извлечён и проверен. После рестарта
 11 sandbox checks × 3 роли + 6 negative RPC прошли повторно; health production ok.
-Полная CLI build/resource probe выполняется через отдельный systemd scope.
+Полная CLI source build и archive roundtrip завершены; штатный manifest verifier
+PASS, sourceDirty=false. Минимум1228MiB RAM/68GiB disk; подробности VALIDATION.
+OAuth profiles перенесены в profiles/sampling, standalone Git checkout dev/review
+созданы. Оба Codex login status и Loginom acceptance check прошли внутри sandbox.
+Node run, memory enrollment, автоматический координатор ещё не активированы.
+На GitHub для 8b308fa40 contracts/typecheck/image PASS, test:run выполняется.

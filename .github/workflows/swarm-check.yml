@@ -5,6 +5,9 @@ on:
   push:
     branches: [swarm]
   workflow_dispatch:
+concurrency:
+  group: swarm-check-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:

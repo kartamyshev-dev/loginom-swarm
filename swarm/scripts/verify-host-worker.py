@@ -37,7 +37,7 @@ def main():
     for body in [
         {'campaign':'infrastructure','role':'developer','command':['/bin/sh']},
         {'campaign':'../sampling','role':'developer'},
-        {'campaign':'sampling','role':'developer'},
+        {'campaign':'unregistered','role':'developer'},
         {'campaign':'infrastructure','role':'root'},
         {'campaign':'infrastructure','role':'reviewer','environment':{'BASH_ENV':'/tmp/evil'}},
     ]:

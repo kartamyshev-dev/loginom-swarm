@@ -20,9 +20,9 @@ for line in (ROOT / ".env").read_text().splitlines():
 body = json.dumps({"url": "https://app.loginom.ai", "username": "agent",
                    "password": "", "apiKey": values["LOGINOM_API_KEY"]})
 # The role is a closed enum; the secret travels exclusively through stdin.
-command = ("cd /opt/loginom-worker/workspaces/acceptance && "
+command = ("cd /opt/loginom-worker/workspaces/sampling/acceptance && "
            "runuser -u loginom-worker -- aa-exec -p loginom-swarm-worker -- env "
-           f"LOGINOM_AI_AGENT_CLI_PROFILE=/opt/loginom-worker/profiles/{args.role} "
+           f"LOGINOM_AI_AGENT_CLI_PROFILE=/opt/loginom-worker/profiles/sampling/{args.role} "
            "xvfb-run -a /opt/loginom-worker/.local/bin/loginom-ai-agent-cli "
            "--no-headless loginom setup --stdin-json --format json")
 result = subprocess.run([str(ROOT / "swarm/scripts/server.sh"),

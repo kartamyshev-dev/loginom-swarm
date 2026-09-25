@@ -55,3 +55,33 @@ Backup restore PASS: 20260925T002721Z, 210 таблиц и точное совп
 Унаследованный commitperclip dependency-review завершился ошибкой: dependency
 graph не включён в форке. Этот устаревший workflow отключён через API; новый
 Swarm CI остаётся включён. Это не ошибка тестов приложения.
+
+## Проверка host runtime и полной CLI-сборки
+
+Изолированная source-сборка f81ebded7333ae7d974fdc5f87e8864cf75dd9c7 завершилась:
+версия 0.0.0-dev-202609250039, sourceDirty=false, archive SHA256
+ce8f3ef2da0515c024f8d5fd174881d16980a6287fdc9a9c6bdabbb1d32a61a3.
+Штатный verifyCliManifest повторно проверил все файлы и права; зависимости:
+Bun1.3.14, Node24.19.0, Playwright1.63.0-alpha-2026-08-31, MCP0.0.80, Chromium1243.
+Минимум свободной памяти 1228 MiB, диска 68 GiB; 111 секунд. Обработка узла
+не выполнялась. Первый итоговый wrapper ошибочно искал sourceCommit в корне
+manifest; исправлен на metadata.sourceCommit, проверен существующий артефакт
+штатным verifier без повторной сборки. Исходный failed receipt сохранён отдельно
+от успешной проверки manifest; его не переписывали на PASS.
+
+Codex0.155.1 установлен отдельно через pinned npm package с lock/integrity.
+Профили developer/reviewer/acceptance перемещены только внутри VPS в
+profiles/sampling; Mac-токены не копировались. Developer и reviewer имеют
+самостоятельные .git, без alternates/hardlinks. В полном sandbox подтверждены
+оба ChatGPT OAuth и LOGINOM_CONNECTION_VALID приёмщика с STRICT_RECOVERY=1.
+
+Входной cache CLI в root-owned toolchain используется для сборки. Его права
+нормализованы для чтения и поэтому он не является запускаемым installed artifact.
+Для infrastructure check используется штатно установленный 0.1.16-prod payload,
+смонтированный строго read-only с исходными manifest modes (включая vendor0600).
+Не исправлять ошибки manifest отключением проверки или изменением его hashes.
+Для приёмки узла потребуется отдельный проверенный полный candidate.
+
+GitHub CI на 8b308fa40: contracts PASS, typecheck PASS, image source build PASS;
+полный test:run ещё выполняется. Готовность source build не означает production deploy.
+Подготовка Paperclip повторена через API: те же pipeline/case IDs, executionStarted=false.

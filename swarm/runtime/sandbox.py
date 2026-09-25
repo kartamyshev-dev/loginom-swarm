@@ -65,6 +65,9 @@ def command(record, payload, *, network=False):
                  '/etc/nsswitch.conf', '/etc/passwd', '/etc/group', '/etc/fonts']:
         if Path(path).exists():
             args += ['--ro-bind', path, path]
+    if record['role'] == 'acceptance':
+        cli = '/opt/loginom-worker/.local/share/loginom-ai-agent-cli/0.1.16-prod'
+        args += ['--ro-bind', cli, cli]
     args += ['--ro-bind', str(TOOLS), str(TOOLS),
              '--ro-bind', '/opt/loginom-swarm/runtime', '/opt/loginom-swarm/runtime',
              '--bind', profile, profile,
