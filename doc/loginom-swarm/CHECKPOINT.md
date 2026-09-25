@@ -58,3 +58,23 @@ OAuth profiles перенесены в profiles/sampling, standalone Git checkou
 созданы. Оба Codex login status и Loginom acceptance check прошли внутри sandbox.
 Node run, memory enrollment, автоматический координатор ещё не активированы.
 На GitHub для 8b308fa40 contracts/typecheck/image PASS, test:run выполняется.
+
+## Проверенный переход на host service
+
+Container → host Unix socket: PASS из отдельного контейнера UID1000,
+network=none, cap_drop ALL, read-only; processingEnabled=false. Production
+Compose не переключался на новый образ.
+
+Reviewer c6a145a3-695e-46e8-927e-e2a828d2204b и acceptance
+c863d349-9642-41ae-9a46-4025d2d5d534 созданы через API, paused, command=false,
+heartbeat/wakeOnDemand отключены. Повтор подготовки вернул те же IDs.
+Developer c49d36f3-1b4d-4f09-8184-acc73daef2c5 сохранён; SSH-пилот не удалён.
+Новая backup 20260925T005034Z включает перемещённые profiles/sampling,
+самостоятельные checkout и инфраструктурный CLI-кандидат. Восстановление проверяется.
+
+Ближайший незавершённый блок — серверная память: пока есть только policy с
+отрицательными тестами. Не выдавать её за работающий gateway. Далее нужны Linux
+hooks/enrollment, настоящий capture/extraction/read-back, coordinator native cases,
+независимый Loginom save/reopen, qualification отказов и production rollout.
+Отдельный внешний блок — GitHub App на gooddaytoday/loginom-ai-agent; установку
+может выполнить владелец. Доступ к kartamyshev-dev/loginom-swarm уже подтверждён.

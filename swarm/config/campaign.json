@@ -35,5 +35,11 @@
   "memoryPeer": "viking://user/kartamyshev/peers/-Users-kartamyshev-Git-loginom-ai-agent/memories",
   "setupStatus": "incomplete",
   "pipelineId": "c92742f4-f55a-42e3-9c3b-93b58da4f2a6",
-  "caseId": "038456b1-e389-4724-a212-436bb4dbd197"
+  "caseId": "038456b1-e389-4724-a212-436bb4dbd197",
+  "agentIds": {
+    "developer": "c49d36f3-1b4d-4f09-8184-acc73daef2c5",
+    "reviewer": "c6a145a3-695e-46e8-927e-e2a828d2204b",
+    "acceptance": "c863d349-9642-41ae-9a46-4025d2d5d534",
+    "publisher": "e7e6aed2-95b5-41ed-bccc-21f1bd2b7015"
+  }
 }

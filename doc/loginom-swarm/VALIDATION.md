@@ -85,3 +85,7 @@ profiles/sampling; Mac-токены не копировались. Developer и 
 GitHub CI на 8b308fa40: contracts PASS, typecheck PASS, image source build PASS;
 полный test:run ещё выполняется. Готовность source build не означает production deploy.
 Подготовка Paperclip повторена через API: те же pipeline/case IDs, executionStarted=false.
+
+Container→host Unix socket PASS в отдельном UID1000/cap_drop ALL/network-none
+контейнере. Worker сообщает processingEnabled=false. 20 локальных Python
+проверок PASS, включая успешный update merge и конфликт без изменения рабочей ветки.
