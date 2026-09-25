@@ -6,7 +6,8 @@ backup_dir=${1:?Usage: verify-backup.sh /opt/paperclip/backups/TIMESTAMP}
 (cd "$backup_dir" && sha256sum -c SHA256SUMS)
 tar -tzf "$backup_dir/files.tar.gz" >/dev/null
 test_db="paperclip_restore_check_$(date +%s)_$$"
-work_dir=$(mktemp -d)
+# Full runtime archives can exceed a RAM-backed /tmp on the LAN host.
+work_dir=$(mktemp -d /opt/paperclip/backups/.verify-XXXXXXXX)
 created=false
 cleanup() {
   if "$created"; then docker compose exec -T db dropdb -U paperclip "$test_db"; fi
@@ -26,49 +27,14 @@ if [ -f "$backup_dir/database.rows.sha256" ]; then
 else
   echo 'Legacy backup restored; snapshot row fingerprint is not available.'
 fi
-tar -xzf "$backup_dir/files.tar.gz" -C "$work_dir" ./data/paperclip/instances/default/config.json 2>/dev/null ||
-  tar -xzf "$backup_dir/files.tar.gz" -C "$work_dir" data/paperclip/instances/default/config.json
-cmp -s data/paperclip/instances/default/config.json "$work_dir/data/paperclip/instances/default/config.json"
-echo 'Restored persistent configuration matches the live file.'
-if [ -f "$backup_dir/worker.tar.gz" ]; then
-  mkdir "$work_dir/worker"
-  tar -xzf "$backup_dir/worker.tar.gz" -C "$work_dir/worker"
-  python3 - "$work_dir/worker" <<'PYWORKER'
-import hashlib, json, pathlib, stat, sys
-root=pathlib.Path(sys.argv[1])
-rows=json.loads((root/'etc/loginom-swarm/roles.json').read_text())
-assert rows
-for row in rows:
- for key in ['workspace','profile']:
-  assert (root/row[key].lstrip('/')).is_dir()
-for p in (root/'opt/loginom-worker/profiles').rglob('auth.json'):
- assert p.stat().st_mode & 0o077 == 0
-assert (root/'etc/systemd/system/loginom-swarm-worker.service').is_file()
-publisher=root/'var/lib/loginom-swarm-publisher'
-if publisher.exists():
- credential=publisher/'.config/gh/hosts.yml'
- assert credential.is_file() and credential.stat().st_mode & 0o077 == 0
- assert publisher.stat().st_mode & 0o077 == 0
- assert credential.read_bytes() == pathlib.Path('/var/lib/loginom-swarm-publisher/.config/gh/hosts.yml').read_bytes()
- print('Publisher OAuth profile restored separately; bytes and private modes match.')
-memory=root/'etc/loginom-swarm/memory-gateway.json'
-if (root/'opt/loginom-swarm/memory').exists():
- assert memory.is_file() and memory.stat().st_mode & 0o027 == 0
- assert (root/'var/lib/loginom-swarm-memory').is_dir()
- assert (root/'etc/systemd/system/loginom-swarm-memory.service').is_file()
- gateway=json.loads(memory.read_text())
- for p in (root/'etc/loginom-swarm/memory-roles').glob('*.json'):
-  role=json.loads(p.read_text())
-  if role['status']!='active':continue
-  assert any(v['threadId']==role['threadId'] and v['role']==role['role'] for v in gateway['principals'].values())
-  profile=root/role['profile'].lstrip('/')
-  cursor=json.loads((profile/'swarm-memory'/(role['threadId']+'.json')).read_text())
-  assert cursor['codexSessionId']==role['threadId'] and cursor['workspacePeerId']==role['peer']
-  for entry in role['sealedFiles'].values():
-   file=root/entry['path'].lstrip('/')
-   assert hashlib.sha256(file.read_bytes()).hexdigest()==entry['sha256']
-   assert file.stat().st_mode & 0o022 == 0
- print('Memory gateway, enrolled threads, capture cursors and sealed configuration restored consistently.')
-print('Worker archive extracted separately; registrations, directories and auth permissions verified.')
-PYWORKER
+if [ ! -f "$backup_dir/snapshot-manifest.json" ]; then
+  echo 'Legacy backup: no self-contained file manifest; file restoration not verified.' >&2
+  exit 1
 fi
+for archive in files worker secrets; do
+  mkdir "$work_dir/$archive"
+  tar --acls --xattrs --xattrs-include='*' --numeric-owner --same-owner \
+    -xzf "$backup_dir/$archive.tar.gz" -C "$work_dir/$archive"
+done
+/opt/paperclip/scripts/backup-manifest.py verify "$backup_dir" "$work_dir"
+echo 'Database and archived files verified against their snapshot; live profiles were not read.'

@@ -5,10 +5,41 @@ import json
 import shlex
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def base_url(values):
+    """An explicit origin takes precedence; legacy deployments retain HTTPS."""
+    value = values.get('PAPERCLIP_BASE_URL')
+    if value is None:
+        value = 'https://' + values['PAPERCLIP_DOMAIN']
+    try:
+        parsed = urllib.parse.urlsplit(value)
+        port = parsed.port
+        valid = (parsed.scheme in ('http', 'https') and parsed.hostname
+                 and parsed.username is None and parsed.password is None
+                 and not parsed.path and not parsed.query and not parsed.fragment
+                 and '?' not in value and '#' not in value
+                 and not parsed.netloc.endswith(':')
+                 and (port is None or port > 0)
+                 and not any(c.isspace() or ord(c) < 32 or ord(c) == 127
+                             for c in value)
+                 and '\\' not in value and '%' not in parsed.netloc)
+    except ValueError:
+        valid = False
+    if not valid:
+        raise ValueError('Paperclip base URL must be an HTTP(S) origin without credentials, path, query or fragment')
+    return value
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        # Never send owner credentials or cookies to a redirected origin.
+        return None
 
 
 class Client:
@@ -21,14 +52,19 @@ class Client:
             tokens = shlex.split(value, comments=True)
             if len(tokens) == 1:
                 values[key.strip()] = tokens[0]
-        self.base = 'https://' + values['PAPERCLIP_DOMAIN']
+        self.base = base_url(values)
         self.opener = urllib.request.build_opener(
-            urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+            urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()), NoRedirect())
         self.request('POST', '/api/auth/sign-in/email', {
             'email': values['PAPERCLIP_EMAIL'], 'password': values['PAPERCLIP_PASSWORD']})
 
     def request(self, method, path, data=None):
-        if not path.startswith('/api/') or '://' in path:
+        parsed = urllib.parse.urlsplit(path)
+        if (not path.startswith('/api/') or '://' in path or parsed.fragment
+                or '#' in path or '\\' in path
+                or any(c.isspace() or ord(c) < 32 or ord(c) == 127 for c in path)
+                or any(part in ('.', '..') for part in
+                       urllib.parse.unquote(parsed.path).split('/'))):
             raise ValueError('Only relative API paths are accepted')
         req = urllib.request.Request(self.base + path, method=method,
             data=None if data is None else json.dumps(data).encode(),

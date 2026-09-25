@@ -1,0 +1,4 @@
+http://loginom-swarm.bg.local {
+    encode zstd gzip
+    reverse_proxy paperclip:3100
+}

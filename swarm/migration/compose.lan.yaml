@@ -1,0 +1,23 @@
+# Apply with compose.yaml; Docker Compose 2.24.4+ supports !override.
+services:
+  db:
+    networks: [lan]
+  paperclip:
+    environment:
+      PAPERCLIP_DEPLOYMENT_MODE: authenticated
+      PAPERCLIP_DEPLOYMENT_EXPOSURE: private
+      PAPERCLIP_PUBLIC_URL: http://loginom-swarm.bg.local
+      PAPERCLIP_AUTH_PUBLIC_BASE_URL: http://loginom-swarm.bg.local
+      PAPERCLIP_AUTH_BASE_URL_MODE: explicit
+      PAPERCLIP_ALLOWED_HOSTNAMES: loginom-swarm.bg.local
+    dns: [172.28.0.1]
+    networks: [lan]
+  caddy:
+    ports: !override
+      - '80:80'
+    dns: [172.28.0.1]
+    networks: [lan]
+networks:
+  lan:
+    external: true
+    name: swarm-lan
