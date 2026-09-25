@@ -1,0 +1,15 @@
+[Unit]
+Description=Loginom Swarm persistent fail-closed network boundary
+DefaultDependencies=no
+After=local-fs.target
+Before=network-pre.target docker.service swarm-vpn.service
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/swarm-vpn/load-firewall
+RemainAfterExit=yes
+# Deliberately no ExecStop: stopping VPN or this unit must not open direct egress.
+
+[Install]
+WantedBy=multi-user.target

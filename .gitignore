@@ -78,3 +78,13 @@ tests/storybook-visual/playwright-report/
 .vercel/
 .env.local
 test-results/
+
+# Loginom Swarm operator state
+.env
+.env.*
+!.env.example
+private/
+backups/
+swarm/.cache/
+swarm/.state/
+**/__pycache__/

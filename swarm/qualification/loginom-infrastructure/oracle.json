@@ -1,0 +1,15 @@
+{
+  "purpose": "infrastructure-only",
+  "package": "/agent/loginom-ai-agent-acceptance-swarm-20260925-v1.lgp",
+  "label": "SwarmInfrastructure",
+  "expected": {"Alpha": 15, "Beta": 27},
+  "columns": ["Category", "Total"],
+  "rows": 2,
+  "types": ["imports.text", "transform.group_data"],
+  "acceptanceModel": "openai/gpt-6-sol",
+  "variant": "low",
+  "deadlineSeconds": 1800,
+  "minimumAvailableMiB": 512,
+  "minimumFreeGiB": 20,
+  "oracleMustStayOutsideModelWorkspace": true
+}

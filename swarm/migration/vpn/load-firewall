@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+umask 077
+batch=$(mktemp)
+trap 'rm -f "$batch"' EXIT
+if nft list table inet swarm_vpn >/dev/null 2>&1; then
+ printf 'delete table inet swarm_vpn\n' > "$batch"
+fi
+cat /etc/loginom-swarm-vpn/firewall.nft >> "$batch"
+nft -c -f "$batch"
+nft -f "$batch"

@@ -1,0 +1,56 @@
+name: Build Loginom Swarm release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Own Swarm release version (for example 0.1.0)
+        required: true
+        type: string
+permissions:
+  contents: read
+  packages: write
+jobs:
+  release:
+    if: github.ref == 'refs/heads/swarm'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+      - name: Check the release source
+        run: |
+          python3 swarm/scripts/check-upstream.py
+          python3 -m unittest discover -s swarm/tests -q
+          pnpm install --frozen-lockfile
+          pnpm -r typecheck
+          pnpm test:run
+          pnpm build
+      - name: Build the source image
+        env:
+          SWARM_VERSION: ${{ inputs.version }}
+        run: |
+          [[ "$SWARM_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 2
+          bash swarm/scripts/build-image.sh "ghcr.io/kartamyshev-dev/loginom-swarm:$SWARM_VERSION"
+      - name: Publish the verified image
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SWARM_VERSION: ${{ inputs.version }}
+        run: |
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          image="ghcr.io/kartamyshev-dev/loginom-swarm:$SWARM_VERSION"
+          docker push "$image"
+          docker image inspect "$image" --format '{{json .RepoDigests}}' > "$RUNNER_TEMP/swarm-digests.json"
+          docker logout ghcr.io
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-release-digest
+          path: ${{ runner.temp }}/swarm-digests.json
+# Deploy is a separate operator procedure. No SSH credentials are used in CI.

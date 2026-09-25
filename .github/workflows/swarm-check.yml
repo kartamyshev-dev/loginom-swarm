@@ -1,0 +1,82 @@
+name: Loginom Swarm checks
+on:
+  pull_request:
+    branches: [swarm]
+  push:
+    branches: [swarm]
+  workflow_dispatch:
+concurrency:
+  group: swarm-check-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: python3 swarm/scripts/check-upstream.py
+      - run: python3 -m unittest discover -s swarm/tests -v
+      - run: python3 -m unittest discover -s swarm/migration/vpn -v
+  application:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r typecheck
+      - run: pnpm build
+
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        args:
+          - '--mode general --group general-server --shard-index 0 --shard-count 2'
+          - '--mode general --group general-server --shard-index 1 --shard-count 2'
+          - '--mode general --group general-workspaces-a'
+          - '--mode general --group general-workspaces-b'
+          - '--mode serialized --shard-index 0 --shard-count 2'
+          - '--mode serialized --shard-index 1 --shard-count 2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run preflight:workspace-links
+      - run: pnpm --filter @paperclipai/plugin-sdk ensure-build-deps
+      - run: node scripts/run-vitest-stable.mjs ${{ matrix.args }}
+
+  image:
+    needs: contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build from the exact fork commit
+        run: bash swarm/scripts/build-image.sh ghcr.io/kartamyshev-dev/loginom-swarm:ci-${{ github.sha }}

@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+# Invoke in EACH actual execution environment; this script grants no persistent readiness.
+unset http_proxy https_proxy all_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY
+for url in https://api.ipify.org https://icanhazip.com; do
+ actual=$(curl --noproxy '*' --fail --silent --show-error --connect-timeout 8 --max-time 15 -4 "$url")
+ [ "$actual" = '185.21.15.251' ] || { printf 'VPN egress mismatch\n' >&2; exit 1; }
+done
+printf 'VPN egress verified\n'
